@@ -1,0 +1,1630 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        margin: 0;
+        padding: 18px;
+        color: #0f2622;
+        font-size: 12px;
+        background: #f7fdfc;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .header,
+      .subtitle,
+      #scanBtn {
+        flex-shrink: 0;
+      }
+      #resultsWrapper {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        margin: 0 -18px;
+        padding: 0 18px;
+      }
+      .sticky-toolbar {
+        position: sticky;
+        top: 0;
+        background: #f7fdfc;
+        z-index: 5;
+        padding-top: 2px;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .logo-dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #2dd4bf, #0d9488);
+        flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(13, 148, 136, 0.35);
+      }
+      h2 {
+        font-size: 15px;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .subtitle {
+        color: #6b8580;
+        margin: 6px 0 16px 0;
+        padding-left: 32px;
+      }
+      button {
+        font-family: inherit;
+        font-size: 12px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .primary-btn {
+        background: linear-gradient(135deg, #2dd4bf, #0d9488);
+        color: white;
+        width: 100%;
+        padding: 12px;
+        font-weight: 700;
+        font-size: 13px;
+        border-radius: 999px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+        letter-spacing: 0.01em;
+      }
+      .primary-btn:hover {
+        filter: brightness(1.05);
+      }
+      .primary-btn:active {
+        transform: scale(0.99);
+      }
+      .primary-btn:disabled {
+        background: #d5dedc;
+        box-shadow: none;
+        cursor: default;
+      }
+      .apply-all-btn {
+        background: #0f2622;
+        color: #5eead4;
+        width: 100%;
+        padding: 13px;
+        font-weight: 700;
+        font-size: 13px;
+        border-radius: 999px;
+        margin-bottom: 8px;
+        box-shadow: 0 4px 14px rgba(15, 38, 34, 0.25);
+      }
+      .apply-all-btn:hover {
+        filter: brightness(1.15);
+      }
+      .apply-all-btn:disabled {
+        background: #d5dedc;
+        color: #999;
+        box-shadow: none;
+        cursor: default;
+      }
+      .undo-all-btn {
+        background: #fff;
+        color: #b45309;
+        border: 1.5px solid #fde3b5;
+        width: 100%;
+        padding: 10px;
+        font-weight: 700;
+        font-size: 12px;
+        border-radius: 999px;
+        margin-bottom: 14px;
+      }
+      .undo-all-btn:hover {
+        background: #fffaf0;
+      }
+      .group-section {
+        margin-bottom: 16px;
+        background: #eef8f6;
+        border: 1px solid #d9ede9;
+        border-radius: 18px;
+        padding: 12px 12px 6px 12px;
+      }
+      .group-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2px 10px 2px;
+        gap: 8px;
+      }
+      .group-header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .group-header-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .group-apply-btn {
+        background: #0d9488;
+        color: white;
+        padding: 5px 12px;
+        font-size: 10.5px;
+        font-weight: 700;
+        border-radius: 999px;
+      }
+      .group-apply-btn:hover {
+        background: #0b7e73;
+      }
+      .group-apply-btn:disabled {
+        background: #d5dedc;
+      }
+      .group-select-all {
+        width: 14px;
+        height: 14px;
+        accent-color: #0d9488;
+        cursor: pointer;
+      }
+      .group-title {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #4c6b65;
+      }
+      .group-count {
+        font-size: 10px;
+        background: #e3f3f0;
+        color: #0f766e;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .row-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        box-shadow:
+          0 1px 2px rgba(15, 38, 34, 0.04),
+          0 4px 14px rgba(15, 38, 34, 0.03);
+        border-left: 3px solid transparent;
+      }
+      .row-card.is-detected {
+        border-left-color: #2dd4bf;
+      }
+      .row-card.is-guessed {
+        border-left-color: #99f0e4;
+      }
+      .row-card.is-applied {
+        border-left-color: #0d9488;
+      }
+      .row-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .row-name {
+        font-weight: 700;
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 12.5px;
+      }
+      .inspect-btn {
+        background: #f1f8f7;
+        padding: 4px 7px;
+        font-size: 12px;
+        border-radius: 8px;
+        opacity: 0.75;
+      }
+      .inspect-btn:hover {
+        opacity: 1;
+        background: #e3f3f0;
+      }
+      .badge {
+        font-size: 10px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-weight: 700;
+        white-space: nowrap;
+        letter-spacing: 0.02em;
+      }
+      .badge.detected {
+        background: #ccfbf1;
+        color: #0f766e;
+      }
+      .badge.guessed {
+        background: #eafaf7;
+        color: #0f766e;
+        border: 1px solid #bdf0e7;
+      }
+      .badge.manual {
+        background: #f1f5f4;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+      }
+      .badge.applied {
+        background: #0d9488;
+        color: #ffffff;
+      }
+      .row-current {
+        color: #9aa8a5;
+        font-size: 10.5px;
+        margin-top: 8px;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      }
+      .row-action {
+        margin-top: 8px;
+      }
+      select {
+        font-size: 11px;
+        padding: 7px 8px;
+        border-radius: 10px;
+        border: 1.5px solid #e2ece9;
+        background: white;
+        width: 100%;
+        color: #0f2622;
+      }
+      select:focus {
+        outline: none;
+        border-color: #2dd4bf;
+      }
+      .preview-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        background: #f7fdfc;
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      .preview-row.applied-row {
+        background: #f0fdfa;
+      }
+      .preview-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #4c6b65;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        flex-shrink: 0;
+      }
+      .preview-value {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 11.5px;
+        color: #0f2622;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .reroll-btn {
+        background: none;
+        padding: 2px 5px;
+        font-size: 13px;
+        opacity: 0.6;
+        flex-shrink: 0;
+      }
+      .reroll-btn:hover {
+        opacity: 1;
+      }
+      .row-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .apply-btn {
+        background: #0d9488;
+        color: white;
+        padding: 7px 16px;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 10px;
+        flex: 1;
+      }
+      .apply-btn:hover {
+        background: #0b7e73;
+      }
+      .apply-btn:disabled {
+        background: #d5dedc;
+      }
+      .undo-btn {
+        background: #fff;
+        color: #b45309;
+        border: 1.5px solid #fde3b5;
+        padding: 7px 16px;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 10px;
+        flex: 1;
+      }
+      .undo-btn:hover {
+        background: #fffaf0;
+      }
+      .row-checkbox {
+        width: 15px;
+        height: 15px;
+        accent-color: #0d9488;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .group-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .group-chip {
+        background: #ffffff;
+        border: 1px solid #d9ede9;
+        color: #0f766e;
+        font-size: 10.5px;
+        font-weight: 700;
+        padding: 6px 11px;
+        border-radius: 999px;
+      }
+      .group-chip:hover {
+        background: #eafaf7;
+        border-color: #99f0e4;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 8px 10px;
+        margin-bottom: 14px;
+        background: #ffffff;
+        border: 1px solid #eaf3f1;
+        border-radius: 12px;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 10px;
+        color: #6b8580;
+      }
+      .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .legend-dot.detected-dot {
+        background: #2dd4bf;
+      }
+      .legend-dot.guessed-dot {
+        background: #99f0e4;
+      }
+      .legend-dot.manual-dot {
+        background: #cbd5d1;
+      }
+      .bulk-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #0f2622;
+        border-radius: 14px;
+        padding: 10px 12px;
+        margin-bottom: 14px;
+      }
+      .bulk-count {
+        color: #5eead4;
+        font-weight: 700;
+        font-size: 11px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .bulk-bar select {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        background: #1c3833;
+        color: white;
+      }
+      .bulk-apply-btn {
+        background: #2dd4bf;
+        color: #0f2622;
+        padding: 7px 14px;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 10px;
+        flex-shrink: 0;
+      }
+      .bulk-apply-btn:hover {
+        background: #5eead4;
+      }
+      .bulk-clear-btn {
+        background: none;
+        color: #9db3ae;
+        padding: 7px 8px;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .bulk-clear-btn:hover {
+        color: white;
+      }
+      .status-text {
+        text-align: center;
+        color: #7c918d;
+        padding: 28px 0;
+      }
+      .empty-state {
+        text-align: center;
+        color: #9db3ae;
+        padding: 36px 16px;
+      }
+      .empty-state .big-check {
+        font-size: 26px;
+        display: block;
+        margin-bottom: 8px;
+        color: #2dd4bf;
+      }
+      .spinner {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        margin-right: 6px;
+        vertical-align: -2px;
+      }
+      .status-text .spinner {
+        border: 2px solid #d5e8e4;
+        border-top-color: #0d9488;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .resize-handle {
+        position: fixed;
+        right: 2px;
+        bottom: 2px;
+        width: 16px;
+        height: 16px;
+        cursor: nwse-resize;
+        z-index: 999;
+        opacity: 0.4;
+      }
+      .resize-handle:hover {
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo-dot"></div>
+      <h2>Fintech Placeholder Generator</h2>
+    </div>
+    <p class="subtitle" id="subtitle">
+      Select a frame or text layer, then scan.
+    </p>
+
+    <button class="primary-btn" id="scanBtn">Scan Selection</button>
+
+    <div id="resultsWrapper">
+      <div id="results"></div>
+    </div>
+
+    <div class="resize-handle" id="resizeHandle">
+      <svg width="16" height="16" viewBox="0 0 16 16">
+        <path
+          d="M14 2L2 14M14 8L8 14M14 14L14 14"
+          stroke="#0d9488"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+      </svg>
+    </div>
+
+    <script>
+      // ---------- Manual resize handle ----------
+      const MIN_W = 340,
+        MIN_H = 420,
+        MAX_W = 720,
+        MAX_H = 960;
+      const resizeHandle = document.getElementById("resizeHandle");
+      let resizing = false;
+      let startX = 0,
+        startY = 0,
+        startW = 0,
+        startH = 0;
+
+      resizeHandle.addEventListener("pointerdown", (e) => {
+        resizing = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startW = window.innerWidth;
+        startH = window.innerHeight;
+        resizeHandle.setPointerCapture(e.pointerId);
+      });
+
+      resizeHandle.addEventListener("pointermove", (e) => {
+        if (!resizing) return;
+        const newW = Math.min(
+          MAX_W,
+          Math.max(MIN_W, startW + (e.clientX - startX)),
+        );
+        const newH = Math.min(
+          MAX_H,
+          Math.max(MIN_H, startH + (e.clientY - startY)),
+        );
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "resize",
+              width: Math.round(newW),
+              height: Math.round(newH),
+            },
+          },
+          "*",
+        );
+      });
+
+      resizeHandle.addEventListener("pointerup", () => {
+        resizing = false;
+      });
+
+      // ---------- Data pools ----------
+      const FIRST_NAMES = [
+        "James",
+        "Maria",
+        "Chidi",
+        "Sarah",
+        "Wei",
+        "Fatima",
+        "Daniel",
+        "Aisha",
+        "Lucas",
+        "Priya",
+        "Omar",
+        "Elena",
+        "Kwame",
+        "Nina",
+        "Tom",
+        "Grace",
+        "Ravi",
+        "Zainab",
+        "Leo",
+        "Amara",
+        "Kenji",
+        "Sofia",
+        "Tunde",
+        "Ingrid",
+        "Hassan",
+        "Yuki",
+        "Carlos",
+        "Ngozi",
+        "Mateus",
+        "Anya",
+        "Kofi",
+        "Mei",
+        "Diego",
+        "Amina",
+        "Liam",
+        "Chioma",
+        "Arjun",
+        "Freya",
+        "Sipho",
+        "Isabella",
+        "Hiroshi",
+        "Adaeze",
+        "Pedro",
+        "Layla",
+        "Chinedu",
+        "Astrid",
+        "Rahul",
+        "Nomvula",
+        "Andres",
+        "Aiyana",
+        "Emeka",
+        "Yara",
+        "Bjorn",
+        "Thandiwe",
+        "Santiago",
+        "Nkechi",
+        "Feng",
+        "Amaru",
+        "Zoe",
+        "Tariq",
+      ];
+      const LAST_NAMES = [
+        "Okafor",
+        "Smith",
+        "Chen",
+        "Garcia",
+        "Mensah",
+        "Patel",
+        "Johnson",
+        "Diallo",
+        "Kim",
+        "Rossi",
+        "Ibrahim",
+        "Novak",
+        "Adeyemi",
+        "Larsson",
+        "Kumar",
+        "Silva",
+        "Hassan",
+        "Wong",
+        "Nwosu",
+        "Fischer",
+        "Tanaka",
+        "Nguyen",
+        "Osei",
+        "Kowalski",
+        "Abara",
+        "Yamamoto",
+        "Torres",
+        "Balogun",
+        "Muller",
+        "Santos",
+        "Achebe",
+        "Wanjiru",
+        "Delgado",
+        "Haile",
+        "Okonkwo",
+        "Andersen",
+        "Reddy",
+        "Mbeki",
+        "Fernandez",
+        "Njoroge",
+        "Suzuki",
+        "Adeleke",
+        "Ferreira",
+        "Amadi",
+        "Costa",
+        "Eze",
+        "Oduya",
+        "Nakamura",
+        "Cardoso",
+        "Abioye",
+        "Bello",
+        "Choudhury",
+        "Marin",
+        "Zhukov",
+        "Osman",
+        "Okeke",
+        "Batista",
+        "Amaro",
+        "Karim",
+        "Falade",
+      ];
+      const MERCHANTS = [
+        "Greenfield Grocers",
+        "Nova Coffee Co.",
+        "Urban Fitness",
+        "Pixel Electronics",
+        "Blue Sky Airlines",
+        "Harborview Hotel",
+        "Metro Transit",
+        "Sunrise Pharmacy",
+        "Cedar & Co",
+        "QuickShip Logistics",
+        "Lighthouse Books",
+        "Fresh Market",
+        "Lagos Mall",
+        "Nairobi Tech Hub",
+        "Tokyo Ramen House",
+        "Berlin Bikes",
+        "Cape Town Surf Co",
+        "Mumbai Spice Market",
+        "Sao Paulo Cafe",
+        "Dubai Duty Free",
+      ];
+      const STREET_NAMES = [
+        "Maple Ave",
+        "Kings Rd",
+        "Harbor St",
+        "5th Avenue",
+        "Sunset Blvd",
+        "Church Lane",
+        "Market St",
+        "Oakwood Dr",
+        "Victoria Island Rd",
+        "Marina Bay St",
+      ];
+      const BANKS = [
+        "Barclays",
+        "HSBC UK",
+        "Lloyds Bank",
+        "NatWest",
+        "Santander UK",
+        "Standard Chartered",
+        "TSB",
+        "Halifax",
+        "Nationwide",
+        "Metro Bank",
+        "JPMorgan Chase",
+        "Bank of America",
+        "Wells Fargo",
+        "Citibank",
+        "Capital One",
+        "US Bank",
+        "PNC Bank",
+        "Truist",
+        "Goldman Sachs",
+        "Morgan Stanley",
+        "Access Bank",
+        "GTBank",
+        "Zenith Bank",
+        "First Bank of Nigeria",
+        "UBA",
+        "Fidelity Bank",
+        "Union Bank",
+        "Sterling Bank",
+        "Wema Bank",
+        "Ecobank Nigeria",
+        "Standard Bank",
+        "Absa Group",
+        "Equity Bank",
+        "KCB Bank",
+        "CIB Egypt",
+        "Attijariwafa Bank",
+        "NIB Ethiopia",
+        "Stanbic Bank",
+        "DBS Bank",
+        "HSBC Hong Kong",
+        "ICBC",
+        "State Bank of India",
+        "HDFC Bank",
+        "Mitsubishi UFJ",
+        "Maybank",
+        "Bangkok Bank",
+        "OCBC Bank",
+        "Kotak Mahindra Bank",
+      ];
+      const CURRENCIES = [
+        "USD",
+        "EUR",
+        "GBP",
+        "NGN",
+        "KES",
+        "ZAR",
+        "GHS",
+        "EGP",
+        "INR",
+        "CNY",
+        "JPY",
+        "KRW",
+        "SGD",
+        "AED",
+        "BRL",
+        "MXN",
+        "CAD",
+        "AUD",
+        "CHF",
+        "PLN",
+        "TRY",
+        "THB",
+        "IDR",
+        "PHP",
+        "VND",
+        "PKR",
+        "BDT",
+        "BTC",
+        "ETH",
+        "USDT",
+        "USDC",
+        "BNB",
+        "SOL",
+        "XRP",
+        "ADA",
+        "DOGE",
+        "MATIC",
+      ];
+      const STATUSES = [
+        "Processing",
+        "Pending",
+        "Completed",
+        "Successful",
+        "In Review",
+        "Failed",
+        "Cancelled",
+        "Active",
+        "Inactive",
+      ];
+
+      function pick(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+      function padDigits(n, len) {
+        let s = String(n);
+        while (s.length < len) s = "0" + s;
+        return s;
+      }
+      function randomDigits(len) {
+        let s = "";
+        for (let i = 0; i < len; i++) s += randomInt(0, 9);
+        return s;
+      }
+      function randomHex(len) {
+        const c = "0123456789abcdef";
+        let s = "";
+        for (let i = 0; i < len; i++) s += c[randomInt(0, 15)];
+        return s;
+      }
+      function randomBase58(len) {
+        const c = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+        let s = "";
+        for (let i = 0; i < len; i++) s += c[randomInt(0, c.length - 1)];
+        return s;
+      }
+      function formatDateTime(date) {
+        const dd = padDigits(date.getDate(), 2);
+        const mm = padDigits(date.getMonth() + 1, 2);
+        const yyyy = date.getFullYear();
+        const hh = padDigits(date.getHours(), 2);
+        const min = padDigits(date.getMinutes(), 2);
+        return `${dd}/${mm}/${yyyy} \u2022 ${hh}:${min}`;
+      }
+
+      const GENERATORS = {
+        fullName: () => `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
+        firstName: () => pick(FIRST_NAMES),
+        lastName: () => pick(LAST_NAMES),
+        email: () => {
+          const first = pick(FIRST_NAMES).toLowerCase();
+          const last = pick(LAST_NAMES).toLowerCase();
+          const domain = pick([
+            "gmail.com",
+            "outlook.com",
+            "proton.me",
+            "yahoo.com",
+          ]);
+          return `${first}.${last}${randomInt(1, 99)}@${domain}`;
+        },
+        phone: () =>
+          `+1 (${randomInt(200, 989)}) ${randomInt(200, 989)}-${padDigits(randomInt(0, 9999), 4)}`,
+        address: () => `${randomInt(10, 9999)} ${pick(STREET_NAMES)}`,
+        accountNumber: () => randomDigits(10),
+        iban: () =>
+          `GB${randomInt(10, 99)} ${pick(["BARC", "HSBC", "LOYD", "NWBK"])} ${randomDigits(4)} ${randomDigits(4)} ${randomDigits(2)}`,
+        cardNumber: () =>
+          `${randomInt(4000, 4999)} ${randomDigits(4)} ${randomDigits(4)} ${randomDigits(4)}`,
+        cardExpiry: () =>
+          `${padDigits(randomInt(1, 12), 2)}/${randomInt(26, 31)}`,
+        cvv: () => randomDigits(3),
+        cryptoAddress: () => {
+          const type = pick(["eth", "btc_bech32", "btc_legacy"]);
+          if (type === "eth") return "0x" + randomHex(40);
+          if (type === "btc_legacy") return "1" + randomBase58(33);
+          return "bc1q" + randomBase58(38).toLowerCase();
+        },
+        currencyAmount: () =>
+          `$${(randomInt(500, 999999) / 100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+        balance: () =>
+          `$${(randomInt(10000, 99999999) / 100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+        percentage: () => `${(randomInt(1, 999) / 100).toFixed(2)}%`,
+        currency: () => pick(CURRENCIES),
+        bankName: () => pick(BANKS),
+        transactionId: () =>
+          `${pick(["OL", "TX", "PY", "RM", "ZX", "QT", "BK", "FN"])}${randomDigits(10)}`,
+        referenceId: () => `REF${randomDigits(8)}`,
+        date: () =>
+          formatDateTime(
+            new Date(
+              Date.now() -
+                randomInt(0, 200) * 86400000 -
+                randomInt(0, 86400000),
+            ),
+          ),
+        kycStatus: () =>
+          pick(["Verified", "Pending Review", "Rejected", "Under Review"]),
+        status: () => pick(STATUSES),
+        merchantName: () => pick(MERCHANTS),
+        custom: () => "Sample text",
+      };
+
+      const CATEGORIES = [
+        { value: "email", label: "Email", keywords: ["email", "e-mail"] },
+        {
+          value: "phone",
+          label: "Phone Number",
+          keywords: ["phone", "mobile", "tel"],
+        },
+        { value: "iban", label: "IBAN", keywords: ["iban"] },
+        {
+          value: "cardNumber",
+          label: "Card Number",
+          keywords: ["card number", "cardnumber", "card-number", "pan"],
+        },
+        {
+          value: "cardExpiry",
+          label: "Card Expiry",
+          keywords: ["expiry", "exp date", "expdate", "exp-date"],
+        },
+        { value: "cvv", label: "CVV", keywords: ["cvv", "cvc"] },
+        {
+          value: "cryptoAddress",
+          label: "Crypto Address",
+          keywords: [
+            "wallet",
+            "crypto address",
+            "crypto-address",
+            "wallet address",
+          ],
+        },
+        {
+          value: "accountNumber",
+          label: "Account Number",
+          keywords: ["account number", "account-number", "acct", "account no"],
+        },
+        {
+          value: "transactionId",
+          label: "Transaction ID",
+          keywords: ["transaction", "txn"],
+        },
+        {
+          value: "referenceId",
+          label: "Reference ID",
+          keywords: ["reference", "ref id", "ref-id", "refid"],
+        },
+        { value: "balance", label: "Balance", keywords: ["balance"] },
+        {
+          value: "currencyAmount",
+          label: "Amount",
+          keywords: ["amount", "price", "total", "fee"],
+        },
+        {
+          value: "percentage",
+          label: "Percentage",
+          keywords: ["percent", "rate", "apr", "interest"],
+        },
+        {
+          value: "currency",
+          label: "Currency Code",
+          keywords: ["currency code", "currency"],
+        },
+        { value: "bankName", label: "Bank Name", keywords: ["bank"] },
+        {
+          value: "kycStatus",
+          label: "KYC Status",
+          keywords: ["kyc", "verification status"],
+        },
+        { value: "status", label: "Status", keywords: ["status"] },
+        {
+          value: "date",
+          label: "Date & Time",
+          keywords: ["date", "timestamp", "time"],
+        },
+        {
+          value: "merchantName",
+          label: "Merchant Name",
+          keywords: ["merchant", "vendor", "store"],
+        },
+        { value: "address", label: "Address", keywords: ["address", "street"] },
+        {
+          value: "firstName",
+          label: "First Name",
+          keywords: ["first name", "firstname", "given name"],
+        },
+        {
+          value: "lastName",
+          label: "Last Name",
+          keywords: ["last name", "lastname", "surname"],
+        },
+        {
+          value: "fullName",
+          label: "Full Name",
+          keywords: ["name", "customer", "holder", "account holder"],
+        },
+        { value: "custom", label: "Custom / Other", keywords: [] },
+      ];
+
+      const GROUPS = [
+        {
+          id: "personal",
+          label: "Personal Info",
+          categories: [
+            "fullName",
+            "firstName",
+            "lastName",
+            "email",
+            "phone",
+            "address",
+          ],
+        },
+        {
+          id: "card",
+          label: "Card",
+          categories: ["cardNumber", "cardExpiry", "cvv"],
+        },
+        {
+          id: "account",
+          label: "Account & Banking",
+          categories: [
+            "accountNumber",
+            "iban",
+            "bankName",
+            "balance",
+            "cryptoAddress",
+          ],
+        },
+        {
+          id: "transaction",
+          label: "Transaction",
+          categories: [
+            "transactionId",
+            "referenceId",
+            "currencyAmount",
+            "currency",
+            "percentage",
+            "date",
+            "status",
+            "merchantName",
+          ],
+        },
+        {
+          id: "verification",
+          label: "Verification",
+          categories: ["kycStatus"],
+        },
+        { id: "other", label: "Other / Custom", categories: ["custom"] },
+      ];
+      function groupForCategory(catValue) {
+        const g = GROUPS.find((g) => g.categories.includes(catValue));
+        return g ? g.id : "other";
+      }
+      function groupLabel(groupId) {
+        const g = GROUPS.find((g) => g.id === groupId);
+        return g ? g.label : "Other";
+      }
+
+      // ---------- Guessing: name first, then content pattern as fallback ----------
+      function guessCategory(name, content) {
+        const lowerName = (name || "").toLowerCase();
+        for (const cat of CATEGORIES) {
+          if (cat.keywords.some((kw) => lowerName.includes(kw))) {
+            return { category: cat.value, source: "name" };
+          }
+        }
+
+        const c = (content || "").trim();
+        if (!c) return { category: "custom", source: null };
+        const cLower = c.toLowerCase();
+
+        // Cross-check against our own known lists first -- highest confidence content signals
+        if (BANKS.some((b) => b.toLowerCase() === cLower))
+          return { category: "bankName", source: "content" };
+        if (MERCHANTS.some((m) => m.toLowerCase() === cLower))
+          return { category: "merchantName", source: "content" };
+        if (STATUSES.some((s) => s.toLowerCase() === cLower))
+          return { category: "status", source: "content" };
+        if (
+          ["verified", "pending review", "rejected", "under review"].includes(
+            cLower,
+          )
+        )
+          return { category: "kycStatus", source: "content" };
+        if (CURRENCIES.includes(c.toUpperCase()) && c.length <= 5)
+          return { category: "currency", source: "content" };
+
+        // Pattern-based signals
+        if (/^[\w.+-]+@[\w-]+\.[a-z]{2,}$/i.test(c))
+          return { category: "email", source: "content" };
+        if (
+          /^0x[a-f0-9]{40}$/i.test(c) ||
+          /^(bc1|[13])[a-zA-Z0-9]{25,}$/.test(c)
+        )
+          return { category: "cryptoAddress", source: "content" };
+        if (/^\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}$/.test(c))
+          return { category: "cardNumber", source: "content" };
+        if (/^\d{2}\/\d{2,4}$/.test(c))
+          return { category: "cardExpiry", source: "content" };
+        if (/^[\$£€₦¥₹₩]\s?[\d,]+(\.\d{2})?$/.test(c))
+          return { category: "currencyAmount", source: "content" };
+        if (/^[\d,]+\.\d{2}$/.test(c))
+          return { category: "currencyAmount", source: "content" };
+        if (
+          /^\d{1,2}\/\d{1,2}\/\d{2,4}/.test(c) ||
+          /^\d{4}-\d{2}-\d{2}/.test(c)
+        )
+          return { category: "date", source: "content" };
+        if (/^\+?[\d\s\-()]{9,}$/.test(c) && /\d{6,}/.test(c))
+          return { category: "phone", source: "content" };
+        if (/^\d{9,12}$/.test(c))
+          return { category: "accountNumber", source: "content" };
+        if (/^\d{3}$/.test(c)) return { category: "cvv", source: "content" };
+        if (/^\d+(\.\d+)?%$/.test(c))
+          return { category: "percentage", source: "content" };
+        if (/^[A-Z]{2,4}\d/.test(c))
+          return { category: "transactionId", source: "content" };
+        if (
+          /,\s*[A-Za-z\s]+(Ave|St|Rd|Blvd|Lane|Drive|Dr)\b/i.test(c) ||
+          /^\d+\s+[A-Za-z\s]+(Ave|St|Rd|Blvd|Lane|Drive|Dr)\b/i.test(c)
+        )
+          return { category: "address", source: "content" };
+
+        // Name cross-check: does content contain a known first or last name?
+        const words = c.split(/\s+/).filter(Boolean);
+        if (words.length >= 2 && words.length <= 3) {
+          const firstMatch = FIRST_NAMES.some(
+            (n) => n.toLowerCase() === words[0].toLowerCase(),
+          );
+          const lastMatch = LAST_NAMES.some(
+            (n) => n.toLowerCase() === words[words.length - 1].toLowerCase(),
+          );
+          if (firstMatch || lastMatch)
+            return { category: "fullName", source: "content" };
+        }
+        // Weaker fallback: looks like Title Case Words (a plausible name even if not in our list)
+        if (
+          words.length >= 2 &&
+          words.length <= 3 &&
+          words.every((w) => /^[A-Z][a-z'-]+$/.test(w))
+        ) {
+          return { category: "fullName", source: "content" };
+        }
+        if (
+          words.length === 1 &&
+          /^[A-Z][a-z'-]+$/.test(words[0]) &&
+          FIRST_NAMES.some((n) => n.toLowerCase() === words[0].toLowerCase())
+        ) {
+          return { category: "firstName", source: "content" };
+        }
+
+        return { category: "custom", source: null };
+      }
+
+      function generateValue(category) {
+        const fn = GENERATORS[category] || GENERATORS.custom;
+        return fn();
+      }
+
+      // ---------- App state ----------
+      let currentResults = [];
+      let isScanning = false;
+
+      const scanBtn = document.getElementById("scanBtn");
+      const subtitle = document.getElementById("subtitle");
+      const resultsEl = document.getElementById("results");
+
+      scanBtn.onclick = () => {
+        if (isScanning) return;
+        isScanning = true;
+        resultsEl.innerHTML =
+          '<div class="status-text"><span class="spinner"></span>Scanning for text layers...</div>';
+        subtitle.textContent = "Working...";
+        scanBtn.disabled = true;
+        parent.postMessage({ pluginMessage: { type: "scan" } }, "*");
+      };
+
+      window.onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+        if (!msg) return;
+
+        if (msg.type === "scan-error") {
+          isScanning = false;
+          scanBtn.disabled = false;
+          subtitle.textContent = msg.message;
+          resultsEl.innerHTML = "";
+        }
+
+        if (msg.type === "scan-complete") {
+          isScanning = false;
+          scanBtn.disabled = false;
+          currentResults = msg.results.map((r, i) => {
+            const guess = guessCategory(r.layerName, r.originalText);
+            return {
+              ...r,
+              _uid: i,
+              category: guess.category,
+              source: guess.source,
+              preview: generateValue(guess.category),
+              applied: false,
+              _checked: false,
+            };
+          });
+          renderResults();
+        }
+
+        if (msg.type === "write-complete") {
+          msg.results.forEach((res) => {
+            const item = currentResults.find((r) => r.layerId === res.layerId);
+            if (!item || !res.success) return;
+            if (msg.purpose === "apply") {
+              item.applied = true;
+            } else if (msg.purpose === "undo") {
+              item.applied = false;
+              item.preview = generateValue(item.category);
+            }
+          });
+          renderResults();
+        }
+      };
+
+      function renderResults() {
+        if (currentResults.length === 0) {
+          subtitle.textContent = "No text layers found.";
+          resultsEl.innerHTML = `<div class="empty-state"><span class="big-check">\u2713</span>Nothing to fill here.</div>`;
+          return;
+        }
+
+        const appliedCount = currentResults.filter((r) => r.applied).length;
+        const pendingCount = currentResults.length - appliedCount;
+        subtitle.textContent =
+          `${currentResults.length} text layer${currentResults.length === 1 ? "" : "s"} found` +
+          (appliedCount ? ` \u00b7 ${appliedCount} applied` : "");
+
+        let legendHtml = `
+        <div class="legend">
+          <span class="legend-item"><span class="legend-dot detected-dot"></span>Detected from layer name</span>
+          <span class="legend-item"><span class="legend-dot guessed-dot"></span>Guessed from content</span>
+          <span class="legend-item"><span class="legend-dot manual-dot"></span>Needs your pick</span>
+        </div>
+      `;
+
+        let actionHtml = "";
+        if (pendingCount > 0) {
+          actionHtml += `<button class="apply-all-btn" id="applyAllBtn">Apply All (${pendingCount})</button>`;
+        }
+        if (appliedCount > 0) {
+          actionHtml += `<button class="undo-all-btn" id="undoAllBtn">Undo All (${appliedCount})</button>`;
+        }
+
+        const checkedCount = currentResults.filter(
+          (r) => r._checked && !r.applied,
+        ).length;
+        if (checkedCount > 0) {
+          actionHtml += `
+          <div class="bulk-bar">
+            <span class="bulk-count">${checkedCount} selected</span>
+            <select id="bulkCategorySelect">
+              <option value="">Set category to\u2026</option>
+              ${renderCategoryOptions(null)}
+            </select>
+            <button class="bulk-apply-btn" id="bulkApplyBtn">Set</button>
+            <button class="bulk-clear-btn" id="bulkClearBtn" title="Clear selection">\u2715</button>
+          </div>
+        `;
+        }
+
+        let groupsHtml = "";
+        const groupsPresent = {};
+        currentResults.forEach((item) => {
+          const gid = groupForCategory(item.category);
+          if (!groupsPresent[gid]) groupsPresent[gid] = [];
+          groupsPresent[gid].push(item);
+        });
+
+        const presentGroups = GROUPS.filter(
+          (g) => groupsPresent[g.id] && groupsPresent[g.id].length > 0,
+        );
+        let navHtml = "";
+        if (presentGroups.length > 1) {
+          navHtml = `
+          <div class="group-nav">
+            ${presentGroups.map((g) => `<button class="group-chip" data-target="group-${g.id}">${escapeHtml(g.label)} \u00b7 ${groupsPresent[g.id].length}</button>`).join("")}
+          </div>
+        `;
+        }
+
+        GROUPS.forEach((g) => {
+          const items = groupsPresent[g.id];
+          if (!items || items.length === 0) return;
+          const selectableItems = items.filter((it) => !it.applied);
+          const allChecked =
+            selectableItems.length > 0 &&
+            selectableItems.every((it) => it._checked);
+          const groupSelectAll =
+            selectableItems.length > 0
+              ? `<input type="checkbox" class="group-select-all" data-group="${g.id}" ${allChecked ? "checked" : ""} title="Select all in ${escapeHtml(g.label)}">`
+              : "";
+          const pendingInGroup = items.filter((it) => !it.applied).length;
+          const groupApplyBtn =
+            pendingInGroup > 0
+              ? `<button class="group-apply-btn" data-group="${g.id}">Apply (${pendingInGroup})</button>`
+              : "";
+          groupsHtml += `
+          <div class="group-section" id="group-${g.id}">
+            <div class="group-header">
+              <div class="group-header-left">
+                ${groupSelectAll}
+                <span class="group-title">${escapeHtml(g.label)}</span>
+              </div>
+              <div class="group-header-right">
+                ${groupApplyBtn}
+                <span class="group-count">${items.length}</span>
+              </div>
+            </div>
+            ${items.map((item) => renderRow(item)).join("")}
+          </div>
+        `;
+        });
+
+        const toolbarHtml =
+          actionHtml || navHtml
+            ? `<div class="sticky-toolbar">${navHtml}${actionHtml}</div>`
+            : "";
+        resultsEl.innerHTML = legendHtml + toolbarHtml + groupsHtml;
+        attachHandlers();
+      }
+
+      function renderCategoryOptions(selectedValue) {
+        return GROUPS.map((g) => {
+          const catsInGroup = CATEGORIES.filter((c) =>
+            g.categories.includes(c.value),
+          );
+          if (catsInGroup.length === 0) return "";
+          const opts = catsInGroup
+            .map(
+              (c) =>
+                `<option value="${c.value}" ${c.value === selectedValue ? "selected" : ""}>${escapeHtml(c.label)}</option>`,
+            )
+            .join("");
+          return `<optgroup label="${escapeHtml(g.label)}">${opts}</optgroup>`;
+        }).join("");
+      }
+
+      function renderRow(item) {
+        const options = renderCategoryOptions(item.category);
+
+        let badge, cardClass;
+        if (item.applied) {
+          badge = `<span class="badge applied">\u2713 applied</span>`;
+          cardClass = "is-applied";
+        } else if (item.source === "name") {
+          badge = `<span class="badge detected">detected</span>`;
+          cardClass = "is-detected";
+        } else if (item.source === "content") {
+          badge = `<span class="badge guessed">guessed</span>`;
+          cardClass = "is-guessed";
+        } else {
+          badge = `<span class="badge manual">pick type</span>`;
+          cardClass = "";
+        }
+
+        const currentLine = item.originalText
+          ? `current: "${item.originalText.length > 36 ? item.originalText.slice(0, 36) + "\u2026" : item.originalText}"`
+          : "current: (empty)";
+
+        return `
+        <div class="row-card ${cardClass}">
+          <div class="row-top">
+            ${item.applied ? "" : `<input type="checkbox" class="row-checkbox" data-uid="${item._uid}" ${item._checked ? "checked" : ""}>`}
+            <div class="row-name">${escapeHtml(item.layerName)}</div>
+            <button class="inspect-btn" data-layer-id="${item.layerId}" title="Select this layer in Figma">\u{1F441}</button>
+            ${badge}
+          </div>
+          <div class="row-current">${escapeHtml(currentLine)}</div>
+          ${
+            item.applied
+              ? ""
+              : `
+            <div class="row-action">
+              <select id="select-${item._uid}" data-uid="${item._uid}">${options}</select>
+            </div>
+          `
+          }
+          <div class="preview-row ${item.applied ? "applied-row" : ""}">
+            <span class="preview-label">${item.applied ? "now" : "will become"}</span>
+            <span class="preview-value">${escapeHtml(item.preview)}</span>
+            ${item.applied ? "" : `<button class="reroll-btn" data-uid="${item._uid}" title="Get a different value">\u{1F504}</button>`}
+          </div>
+          <div class="row-buttons">
+            ${
+              item.applied
+                ? `<button class="undo-btn" data-uid="${item._uid}">Undo</button>`
+                : `<button class="apply-btn" data-uid="${item._uid}">Apply</button>`
+            }
+          </div>
+        </div>
+      `;
+      }
+
+      function attachHandlers() {
+        const applyAllBtn = document.getElementById("applyAllBtn");
+        if (applyAllBtn) {
+          applyAllBtn.onclick = () => {
+            const items = currentResults
+              .filter((r) => !r.applied)
+              .map((r) => ({ layerId: r.layerId, value: r.preview }));
+            applyAllBtn.disabled = true;
+            applyAllBtn.innerHTML = '<span class="spinner"></span>Applying...';
+            parent.postMessage(
+              { pluginMessage: { type: "write", items, purpose: "apply" } },
+              "*",
+            );
+          };
+        }
+
+        const undoAllBtn = document.getElementById("undoAllBtn");
+        if (undoAllBtn) {
+          undoAllBtn.onclick = () => {
+            const items = currentResults
+              .filter((r) => r.applied)
+              .map((r) => ({ layerId: r.layerId, value: r.originalText }));
+            undoAllBtn.disabled = true;
+            undoAllBtn.textContent = "Undoing...";
+            parent.postMessage(
+              { pluginMessage: { type: "write", items, purpose: "undo" } },
+              "*",
+            );
+          };
+        }
+
+        document.querySelectorAll(".group-apply-btn").forEach((btn) => {
+          btn.onclick = () => {
+            const gid = btn.getAttribute("data-group");
+            const items = currentResults
+              .filter((r) => !r.applied && groupForCategory(r.category) === gid)
+              .map((r) => ({ layerId: r.layerId, value: r.preview }));
+            btn.disabled = true;
+            btn.textContent = "...";
+            parent.postMessage(
+              { pluginMessage: { type: "write", items, purpose: "apply" } },
+              "*",
+            );
+          };
+        });
+
+        document.querySelectorAll(".group-chip").forEach((chip) => {
+          chip.onclick = () => {
+            const target = document.getElementById(
+              chip.getAttribute("data-target"),
+            );
+            const wrapper = document.getElementById("resultsWrapper");
+            const toolbar = document.querySelector(".sticky-toolbar");
+            if (!target || !wrapper) return;
+            const toolbarHeight = toolbar
+              ? toolbar.getBoundingClientRect().height
+              : 0;
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            const offset =
+              targetRect.top -
+              wrapperRect.top +
+              wrapper.scrollTop -
+              toolbarHeight -
+              8;
+            wrapper.scrollTo({ top: offset, behavior: "smooth" });
+          };
+        });
+
+        document.querySelectorAll(".row-checkbox").forEach((cb) => {
+          cb.onchange = () => {
+            const uid = Number(cb.getAttribute("data-uid"));
+            const item = currentResults.find((r) => r._uid === uid);
+            if (!item) return;
+            item._checked = cb.checked;
+            renderResults();
+          };
+        });
+
+        document.querySelectorAll(".group-select-all").forEach((cb) => {
+          cb.onchange = () => {
+            const gid = cb.getAttribute("data-group");
+            currentResults.forEach((r) => {
+              if (!r.applied && groupForCategory(r.category) === gid) {
+                r._checked = cb.checked;
+              }
+            });
+            renderResults();
+          };
+        });
+
+        const bulkApplyBtn = document.getElementById("bulkApplyBtn");
+        if (bulkApplyBtn) {
+          bulkApplyBtn.onclick = () => {
+            const bulkSelect = document.getElementById("bulkCategorySelect");
+            const newCategory = bulkSelect.value;
+            if (!newCategory) return;
+            currentResults.forEach((item) => {
+              if (item._checked && !item.applied) {
+                item.category = newCategory;
+                item.source = "name";
+                item.preview = generateValue(newCategory);
+                item._checked = false;
+              }
+            });
+            renderResults();
+          };
+        }
+
+        const bulkClearBtn = document.getElementById("bulkClearBtn");
+        if (bulkClearBtn) {
+          bulkClearBtn.onclick = () => {
+            currentResults.forEach((item) => {
+              item._checked = false;
+            });
+            renderResults();
+          };
+        }
+
+        document.querySelectorAll('select[id^="select-"]').forEach((sel) => {
+          sel.onchange = () => {
+            const uid = Number(sel.getAttribute("data-uid"));
+            const item = currentResults.find((r) => r._uid === uid);
+            if (!item) return;
+            item.category = sel.value;
+            item.source = "name";
+            item.preview = generateValue(item.category);
+            renderResults();
+          };
+        });
+
+        document.querySelectorAll(".reroll-btn").forEach((btn) => {
+          btn.onclick = () => {
+            const uid = Number(btn.getAttribute("data-uid"));
+            const item = currentResults.find((r) => r._uid === uid);
+            if (!item) return;
+            item.preview = generateValue(item.category);
+            renderResults();
+          };
+        });
+
+        document.querySelectorAll(".apply-btn").forEach((btn) => {
+          btn.onclick = () => {
+            const uid = Number(btn.getAttribute("data-uid"));
+            const item = currentResults.find((r) => r._uid === uid);
+            if (!item) return;
+            btn.disabled = true;
+            btn.textContent = "...";
+            parent.postMessage(
+              {
+                pluginMessage: {
+                  type: "write",
+                  items: [{ layerId: item.layerId, value: item.preview }],
+                  purpose: "apply",
+                },
+              },
+              "*",
+            );
+          };
+        });
+
+        document.querySelectorAll(".undo-btn").forEach((btn) => {
+          btn.onclick = () => {
+            const uid = Number(btn.getAttribute("data-uid"));
+            const item = currentResults.find((r) => r._uid === uid);
+            if (!item) return;
+            btn.disabled = true;
+            btn.textContent = "...";
+            parent.postMessage(
+              {
+                pluginMessage: {
+                  type: "write",
+                  items: [{ layerId: item.layerId, value: item.originalText }],
+                  purpose: "undo",
+                },
+              },
+              "*",
+            );
+          };
+        });
+
+        document.querySelectorAll(".inspect-btn").forEach((btn) => {
+          btn.onclick = () => {
+            const layerId = btn.getAttribute("data-layer-id");
+            parent.postMessage(
+              { pluginMessage: { type: "inspect", layerId } },
+              "*",
+            );
+          };
+        });
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+    </script>
+  </body>
+</html>
