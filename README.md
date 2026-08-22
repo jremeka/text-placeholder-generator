@@ -1,10 +1,10 @@
-# Fintech Placeholder Generator
+# Text Placeholder Generator
 
 A Figma plugin that scans selected text layers, detects what kind of
-fintech data each one should hold (names, account numbers, card details,
-transaction IDs, KYC status, and more) from the layer name or existing
-content, and generates realistic placeholder data — grouped, previewed
-before writing, and fully undoable.
+content each one should hold from the layer name or existing text, and
+generates realistic placeholder data — grouped by domain (Fintech,
+Commerce, Content, Social, People, Generic), previewed before writing,
+and fully undoable.
 
 ## Status
 In active development.

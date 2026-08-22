@@ -5,62 +5,88 @@
       * {
         box-sizing: border-box;
       }
+      html,
+      body {
+        height: 100%;
+      }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         margin: 0;
-        padding: 18px;
-        color: #0f2622;
+        padding: 16px;
+        color: #1c2129;
         font-size: 12px;
-        background: #f7fdfc;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
+        background: #eef1f7;
+        position: relative;
+        overflow-x: hidden;
+        min-height: 100vh;
       }
-      .header,
-      .subtitle,
-      #scanBtn {
-        flex-shrink: 0;
+      .blob {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(60px);
+        z-index: 0;
+        pointer-events: none;
       }
-      #resultsWrapper {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-        margin: 0 -18px;
-        padding: 0 18px;
+      .blob.b1 {
+        width: 260px;
+        height: 260px;
+        background: #8fd3ff;
+        opacity: 0.45;
+        top: -80px;
+        right: -60px;
       }
-      .sticky-toolbar {
-        position: sticky;
-        top: 0;
-        background: #f7fdfc;
-        z-index: 5;
-        padding-top: 2px;
+      .blob.b2 {
+        width: 220px;
+        height: 220px;
+        background: #c7b7f7;
+        opacity: 0.4;
+        bottom: 40px;
+        left: -70px;
       }
+      .blob.b3 {
+        width: 180px;
+        height: 180px;
+        background: #a7e8d0;
+        opacity: 0.3;
+        bottom: -60px;
+        right: 20px;
+      }
+
+      * {
+        position: relative;
+        z-index: 1;
+      }
+      .blob {
+        z-index: 0 !important;
+      }
+
       .header {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 4px;
+        gap: 9px;
+        margin-bottom: 12px;
       }
-      .logo-dot {
-        width: 22px;
-        height: 22px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #2dd4bf, #0d9488);
+      .logo-badge {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 2px 6px rgba(13, 148, 136, 0.35);
+      }
+      .logo-badge img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
       }
       h2 {
         font-size: 15px;
         margin: 0;
-        font-weight: 700;
+        font-weight: 800;
         letter-spacing: -0.01em;
+        color: #1c2129;
       }
-      .subtitle {
-        color: #6b8580;
-        margin: 6px 0 16px 0;
-        padding-left: 32px;
-      }
+
       button {
         font-family: inherit;
         font-size: 12px;
@@ -68,426 +94,234 @@
         cursor: pointer;
         transition: all 0.15s ease;
       }
-      .primary-btn {
-        background: linear-gradient(135deg, #2dd4bf, #0d9488);
-        color: white;
-        width: 100%;
-        padding: 12px;
-        font-weight: 700;
-        font-size: 13px;
-        border-radius: 999px;
-        margin-bottom: 10px;
-        box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
-        letter-spacing: 0.01em;
-      }
-      .primary-btn:hover {
-        filter: brightness(1.05);
-      }
-      .primary-btn:active {
-        transform: scale(0.99);
-      }
-      .primary-btn:disabled {
-        background: #d5dedc;
-        box-shadow: none;
-        cursor: default;
-      }
-      .apply-all-btn {
-        background: #0f2622;
-        color: #5eead4;
-        width: 100%;
-        padding: 13px;
-        font-weight: 700;
-        font-size: 13px;
-        border-radius: 999px;
-        margin-bottom: 8px;
-        box-shadow: 0 4px 14px rgba(15, 38, 34, 0.25);
-      }
-      .apply-all-btn:hover {
-        filter: brightness(1.15);
-      }
-      .apply-all-btn:disabled {
-        background: #d5dedc;
-        color: #999;
-        box-shadow: none;
-        cursor: default;
-      }
-      .undo-all-btn {
-        background: #fff;
-        color: #b45309;
-        border: 1.5px solid #fde3b5;
-        width: 100%;
-        padding: 10px;
-        font-weight: 700;
-        font-size: 12px;
-        border-radius: 999px;
-        margin-bottom: 14px;
-      }
-      .undo-all-btn:hover {
-        background: #fffaf0;
-      }
-      .group-section {
-        margin-bottom: 16px;
-        background: #eef8f6;
-        border: 1px solid #d9ede9;
+
+      .glass {
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(16px) saturate(160%);
+        -webkit-backdrop-filter: blur(16px) saturate(160%);
+        border: 1px solid rgba(255, 255, 255, 0.7);
         border-radius: 18px;
-        padding: 12px 12px 6px 12px;
+        box-shadow:
+          0 4px 24px rgba(31, 41, 55, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.6);
       }
-      .group-header {
+
+      /* ---- Selection status ---- */
+      .selection-pill {
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
-        padding: 0 2px 10px 2px;
-        gap: 8px;
+        padding: 10px 14px;
+        margin-bottom: 12px;
       }
-      .group-header-left {
+      .selection-pill .sel-text {
+        font-weight: 700;
+        font-size: 11.5px;
+        color: #1c2129;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .selection-pill .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #b8c0cc;
+        flex-shrink: 0;
+      }
+      .selection-pill.active .dot {
+        background: #18a0fb;
+        box-shadow: 0 0 6px rgba(24, 160, 251, 0.6);
+      }
+      .selection-pill.active .sel-text {
+        color: #0d8de0;
+      }
+      .selection-pill.shake {
+        animation: shake 0.4s ease;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-4px);
+        }
+        75% {
+          transform: translateX(4px);
+        }
+      }
+
+      /* ---- Search bar ---- */
+      .search-bar {
         display: flex;
         align-items: center;
         gap: 8px;
+        padding: 9px 12px;
+        margin-bottom: 12px;
       }
-      .group-header-right {
+      .search-bar input {
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 12px;
+        color: #1c2129;
+        flex: 1;
+        min-width: 0;
+      }
+      .search-bar input::placeholder {
+        color: #8b93a3;
+      }
+      .search-icon {
+        font-size: 13px;
+        opacity: 0.55;
+        flex-shrink: 0;
+      }
+      .search-clear {
+        font-size: 13px;
+        opacity: 0.5;
+        flex-shrink: 0;
+      }
+      .search-clear:hover {
+        opacity: 1;
+      }
+
+      /* ---- Tabs ---- */
+      .tab-row {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        margin-bottom: 12px;
+        scrollbar-width: none;
+      }
+      .tab-row::-webkit-scrollbar {
+        display: none;
+      }
+      .tab-chip {
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.45);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        color: #4b5566;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 7px 13px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .tab-chip.active {
+        background: #18a0fb;
+        color: white;
+        border-color: transparent;
+        box-shadow:
+          0 3px 10px rgba(24, 160, 251, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      }
+      .tab-chip:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      /* ---- Category grid ---- */
+      .group-block {
+        margin-bottom: 16px;
+      }
+      .group-label {
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b7688;
+        margin: 0 0 8px 4px;
+      }
+      .cat-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .cat-btn {
         display: flex;
         align-items: center;
         gap: 8px;
+        padding: 12px 12px;
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 14px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #1c2129;
+        box-shadow:
+          0 2px 10px rgba(31, 41, 55, 0.05),
+          inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        text-align: left;
       }
-      .group-apply-btn {
-        background: #0d9488;
+      .cat-btn:hover {
+        background: rgba(255, 255, 255, 0.8);
+        transform: translateY(-1px);
+        box-shadow:
+          0 4px 16px rgba(31, 41, 55, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      }
+      .cat-btn:active {
+        transform: translateY(0);
+      }
+      .cat-icon {
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .cat-label {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .more-toggle {
+        background: none;
+        color: #0d8de0;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 8px 4px;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      /* ---- Undo toast ---- */
+      .toast {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        margin-bottom: 12px;
+        background: rgba(24, 160, 251, 0.12);
+        border: 1px solid rgba(24, 160, 251, 0.3);
+      }
+      .toast-text {
+        font-size: 11px;
+        font-weight: 600;
+        color: #0d8de0;
+      }
+      .toast-undo {
+        background: #18a0fb;
         color: white;
         padding: 5px 12px;
         font-size: 10.5px;
         font-weight: 700;
         border-radius: 999px;
-      }
-      .group-apply-btn:hover {
-        background: #0b7e73;
-      }
-      .group-apply-btn:disabled {
-        background: #d5dedc;
-      }
-      .group-select-all {
-        width: 14px;
-        height: 14px;
-        accent-color: #0d9488;
-        cursor: pointer;
-      }
-      .group-title {
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #4c6b65;
-      }
-      .group-count {
-        font-size: 10px;
-        background: #e3f3f0;
-        color: #0f766e;
-        padding: 2px 8px;
-        border-radius: 999px;
-        font-weight: 700;
-      }
-      .row-card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 14px 16px;
-        margin-bottom: 10px;
-        box-shadow:
-          0 1px 2px rgba(15, 38, 34, 0.04),
-          0 4px 14px rgba(15, 38, 34, 0.03);
-        border-left: 3px solid transparent;
-      }
-      .row-card.is-detected {
-        border-left-color: #2dd4bf;
-      }
-      .row-card.is-guessed {
-        border-left-color: #99f0e4;
-      }
-      .row-card.is-applied {
-        border-left-color: #0d9488;
-      }
-      .row-top {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .row-name {
-        font-weight: 700;
-        flex: 1;
-        min-width: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 12.5px;
-      }
-      .inspect-btn {
-        background: #f1f8f7;
-        padding: 4px 7px;
-        font-size: 12px;
-        border-radius: 8px;
-        opacity: 0.75;
-      }
-      .inspect-btn:hover {
-        opacity: 1;
-        background: #e3f3f0;
-      }
-      .badge {
-        font-size: 10px;
-        padding: 3px 9px;
-        border-radius: 999px;
-        font-weight: 700;
-        white-space: nowrap;
-        letter-spacing: 0.02em;
-      }
-      .badge.detected {
-        background: #ccfbf1;
-        color: #0f766e;
-      }
-      .badge.guessed {
-        background: #eafaf7;
-        color: #0f766e;
-        border: 1px solid #bdf0e7;
-      }
-      .badge.manual {
-        background: #f1f5f4;
-        color: #64748b;
-        border: 1px solid #e2e8f0;
-      }
-      .badge.applied {
-        background: #0d9488;
-        color: #ffffff;
-      }
-      .row-current {
-        color: #9aa8a5;
-        font-size: 10.5px;
-        margin-top: 8px;
-        font-family: ui-monospace, "SF Mono", Menlo, monospace;
-      }
-      .row-action {
-        margin-top: 8px;
-      }
-      select {
-        font-size: 11px;
-        padding: 7px 8px;
-        border-radius: 10px;
-        border: 1.5px solid #e2ece9;
-        background: white;
-        width: 100%;
-        color: #0f2622;
-      }
-      select:focus {
-        outline: none;
-        border-color: #2dd4bf;
-      }
-      .preview-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 10px;
-        background: #f7fdfc;
-        border-radius: 10px;
-        padding: 8px 10px;
-      }
-      .preview-row.applied-row {
-        background: #f0fdfa;
-      }
-      .preview-label {
-        font-size: 10px;
-        font-weight: 700;
-        color: #4c6b65;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
         flex-shrink: 0;
       }
-      .preview-value {
-        font-family: ui-monospace, "SF Mono", Menlo, monospace;
-        font-size: 11.5px;
-        color: #0f2622;
-        flex: 1;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+      .toast-undo:hover {
+        background: #0d8de0;
       }
-      .reroll-btn {
-        background: none;
-        padding: 2px 5px;
-        font-size: 13px;
-        opacity: 0.6;
-        flex-shrink: 0;
-      }
-      .reroll-btn:hover {
-        opacity: 1;
-      }
-      .row-buttons {
-        display: flex;
-        gap: 8px;
-        margin-top: 10px;
-      }
-      .apply-btn {
-        background: #0d9488;
-        color: white;
-        padding: 7px 16px;
-        font-size: 11px;
-        font-weight: 700;
-        border-radius: 10px;
-        flex: 1;
-      }
-      .apply-btn:hover {
-        background: #0b7e73;
-      }
-      .apply-btn:disabled {
-        background: #d5dedc;
-      }
-      .undo-btn {
-        background: #fff;
-        color: #b45309;
-        border: 1.5px solid #fde3b5;
-        padding: 7px 16px;
-        font-size: 11px;
-        font-weight: 700;
-        border-radius: 10px;
-        flex: 1;
-      }
-      .undo-btn:hover {
-        background: #fffaf0;
-      }
-      .row-checkbox {
-        width: 15px;
-        height: 15px;
-        accent-color: #0d9488;
-        cursor: pointer;
-        flex-shrink: 0;
-      }
-      .group-nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 10px;
-      }
-      .group-chip {
-        background: #ffffff;
-        border: 1px solid #d9ede9;
-        color: #0f766e;
-        font-size: 10.5px;
-        font-weight: 700;
-        padding: 6px 11px;
-        border-radius: 999px;
-      }
-      .group-chip:hover {
-        background: #eafaf7;
-        border-color: #99f0e4;
-      }
-      .legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        padding: 8px 10px;
-        margin-bottom: 14px;
-        background: #ffffff;
-        border: 1px solid #eaf3f1;
-        border-radius: 12px;
-      }
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 10px;
-        color: #6b8580;
-      }
-      .legend-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .legend-dot.detected-dot {
-        background: #2dd4bf;
-      }
-      .legend-dot.guessed-dot {
-        background: #99f0e4;
-      }
-      .legend-dot.manual-dot {
-        background: #cbd5d1;
-      }
-      .bulk-bar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: #0f2622;
-        border-radius: 14px;
-        padding: 10px 12px;
-        margin-bottom: 14px;
-      }
-      .bulk-count {
-        color: #5eead4;
-        font-weight: 700;
-        font-size: 11px;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-      .bulk-bar select {
-        flex: 1;
-        min-width: 0;
-        border: none;
-        background: #1c3833;
-        color: white;
-      }
-      .bulk-apply-btn {
-        background: #2dd4bf;
-        color: #0f2622;
-        padding: 7px 14px;
-        font-size: 11px;
-        font-weight: 700;
-        border-radius: 10px;
-        flex-shrink: 0;
-      }
-      .bulk-apply-btn:hover {
-        background: #5eead4;
-      }
-      .bulk-clear-btn {
-        background: none;
-        color: #9db3ae;
-        padding: 7px 8px;
-        font-size: 14px;
-        flex-shrink: 0;
-      }
-      .bulk-clear-btn:hover {
-        color: white;
-      }
-      .status-text {
+
+      .empty-note {
         text-align: center;
-        color: #7c918d;
-        padding: 28px 0;
+        color: #8b93a3;
+        font-size: 11px;
+        padding: 6px 0 14px 0;
       }
-      .empty-state {
-        text-align: center;
-        color: #9db3ae;
-        padding: 36px 16px;
-      }
-      .empty-state .big-check {
-        font-size: 26px;
-        display: block;
-        margin-bottom: 8px;
-        color: #2dd4bf;
-      }
-      .spinner {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border: 2px solid rgba(255, 255, 255, 0.35);
-        border-top-color: #ffffff;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-        margin-right: 6px;
-        vertical-align: -2px;
-      }
-      .status-text .spinner {
-        border: 2px solid #d5e8e4;
-        border-top-color: #0d9488;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
+
       .resize-handle {
         position: fixed;
         right: 2px;
@@ -504,25 +338,47 @@
     </style>
   </head>
   <body>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+
     <div class="header">
-      <div class="logo-dot"></div>
-      <h2>Fintech Placeholder Generator</h2>
+      <div class="logo-badge">
+        <img
+          src="data:image/png;base64,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"
+          alt=""
+        />
+      </div>
+      <h2>Text Placeholder Generator</h2>
     </div>
-    <p class="subtitle" id="subtitle">
-      Select a frame or text layer, then scan.
-    </p>
 
-    <button class="primary-btn" id="scanBtn">Scan Selection</button>
-
-    <div id="resultsWrapper">
-      <div id="results"></div>
+    <div class="selection-pill glass" id="selectionPill">
+      <span class="sel-text"
+        ><span class="dot"></span>No text layers selected</span
+      >
     </div>
+
+    <div id="toastArea"></div>
+
+    <div class="search-bar glass">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search all categories…"
+      />
+      <button class="search-clear" id="searchClear" style="display: none">
+        ✕
+      </button>
+    </div>
+
+    <div id="pickerArea"></div>
 
     <div class="resize-handle" id="resizeHandle">
       <svg width="16" height="16" viewBox="0 0 16 16">
         <path
           d="M14 2L2 14M14 8L8 14M14 14L14 14"
-          stroke="#0d9488"
+          stroke="#18a0fb"
           stroke-width="1.5"
           stroke-linecap="round"
         />
@@ -550,7 +406,6 @@
         startH = window.innerHeight;
         resizeHandle.setPointerCapture(e.pointerId);
       });
-
       resizeHandle.addEventListener("pointermove", (e) => {
         if (!resizing) return;
         const newW = Math.min(
@@ -572,12 +427,11 @@
           "*",
         );
       });
-
       resizeHandle.addEventListener("pointerup", () => {
         resizing = false;
       });
 
-      // ---------- Data pools ----------
+      // ================= DATA POOLS =================
       const FIRST_NAMES = [
         "James",
         "Maria",
@@ -619,26 +473,6 @@
         "Freya",
         "Sipho",
         "Isabella",
-        "Hiroshi",
-        "Adaeze",
-        "Pedro",
-        "Layla",
-        "Chinedu",
-        "Astrid",
-        "Rahul",
-        "Nomvula",
-        "Andres",
-        "Aiyana",
-        "Emeka",
-        "Yara",
-        "Bjorn",
-        "Thandiwe",
-        "Santiago",
-        "Nkechi",
-        "Feng",
-        "Amaru",
-        "Zoe",
-        "Tariq",
       ];
       const LAST_NAMES = [
         "Okafor",
@@ -665,64 +499,12 @@
         "Nguyen",
         "Osei",
         "Kowalski",
-        "Abara",
         "Yamamoto",
         "Torres",
         "Balogun",
         "Muller",
         "Santos",
-        "Achebe",
-        "Wanjiru",
-        "Delgado",
-        "Haile",
-        "Okonkwo",
-        "Andersen",
         "Reddy",
-        "Mbeki",
-        "Fernandez",
-        "Njoroge",
-        "Suzuki",
-        "Adeleke",
-        "Ferreira",
-        "Amadi",
-        "Costa",
-        "Eze",
-        "Oduya",
-        "Nakamura",
-        "Cardoso",
-        "Abioye",
-        "Bello",
-        "Choudhury",
-        "Marin",
-        "Zhukov",
-        "Osman",
-        "Okeke",
-        "Batista",
-        "Amaro",
-        "Karim",
-        "Falade",
-      ];
-      const MERCHANTS = [
-        "Greenfield Grocers",
-        "Nova Coffee Co.",
-        "Urban Fitness",
-        "Pixel Electronics",
-        "Blue Sky Airlines",
-        "Harborview Hotel",
-        "Metro Transit",
-        "Sunrise Pharmacy",
-        "Cedar & Co",
-        "QuickShip Logistics",
-        "Lighthouse Books",
-        "Fresh Market",
-        "Lagos Mall",
-        "Nairobi Tech Hub",
-        "Tokyo Ramen House",
-        "Berlin Bikes",
-        "Cape Town Surf Co",
-        "Mumbai Spice Market",
-        "Sao Paulo Cafe",
-        "Dubai Duty Free",
       ];
       const STREET_NAMES = [
         "Maple Ave",
@@ -743,48 +525,18 @@
         "NatWest",
         "Santander UK",
         "Standard Chartered",
-        "TSB",
-        "Halifax",
-        "Nationwide",
-        "Metro Bank",
         "JPMorgan Chase",
         "Bank of America",
         "Wells Fargo",
         "Citibank",
-        "Capital One",
-        "US Bank",
-        "PNC Bank",
-        "Truist",
-        "Goldman Sachs",
-        "Morgan Stanley",
         "Access Bank",
         "GTBank",
         "Zenith Bank",
-        "First Bank of Nigeria",
         "UBA",
-        "Fidelity Bank",
-        "Union Bank",
-        "Sterling Bank",
-        "Wema Bank",
-        "Ecobank Nigeria",
-        "Standard Bank",
-        "Absa Group",
         "Equity Bank",
-        "KCB Bank",
-        "CIB Egypt",
-        "Attijariwafa Bank",
-        "NIB Ethiopia",
-        "Stanbic Bank",
         "DBS Bank",
-        "HSBC Hong Kong",
         "ICBC",
-        "State Bank of India",
         "HDFC Bank",
-        "Mitsubishi UFJ",
-        "Maybank",
-        "Bangkok Bank",
-        "OCBC Bank",
-        "Kotak Mahindra Bank",
       ];
       const CURRENCIES = [
         "USD",
@@ -793,39 +545,20 @@
         "NGN",
         "KES",
         "ZAR",
-        "GHS",
-        "EGP",
         "INR",
         "CNY",
         "JPY",
-        "KRW",
         "SGD",
         "AED",
         "BRL",
-        "MXN",
         "CAD",
         "AUD",
-        "CHF",
-        "PLN",
-        "TRY",
-        "THB",
-        "IDR",
-        "PHP",
-        "VND",
-        "PKR",
-        "BDT",
         "BTC",
         "ETH",
         "USDT",
-        "USDC",
-        "BNB",
         "SOL",
-        "XRP",
-        "ADA",
-        "DOGE",
-        "MATIC",
       ];
-      const STATUSES = [
+      const FIN_STATUSES = [
         "Processing",
         "Pending",
         "Completed",
@@ -836,6 +569,201 @@
         "Active",
         "Inactive",
       ];
+      const MERCHANTS = [
+        "Greenfield Grocers",
+        "Nova Coffee Co.",
+        "Urban Fitness",
+        "Pixel Electronics",
+        "Blue Sky Airlines",
+        "Harborview Hotel",
+        "Sunrise Pharmacy",
+        "QuickShip Logistics",
+        "Lighthouse Books",
+        "Fresh Market",
+      ];
+
+      const PRODUCTS = [
+        "Aria Wireless Headphones",
+        "Cedar Oak Desk Lamp",
+        "Nimbus Rain Jacket",
+        "Voyage Leather Backpack",
+        "Halo Smart Ring",
+        "Terra Ceramic Mug Set",
+        "Drift Bluetooth Speaker",
+        "Elm Linen Bedsheet",
+        "Pulse Fitness Tracker",
+        "Basin Stainless Water Bottle",
+        "Loom Wool Throw Blanket",
+        "Glide Electric Scooter",
+      ];
+      const CATEGORY_TAGS = [
+        "Electronics",
+        "Home & Living",
+        "Outdoor",
+        "Beauty",
+        "Kitchenware",
+        "Apparel",
+        "Fitness",
+        "Accessories",
+        "Stationery",
+        "Toys",
+      ];
+      const SHIP_STATUSES = [
+        "Order Placed",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
+        "Delayed",
+        "Returned",
+      ];
+
+      const HEADLINES = [
+        "Five habits that quietly change everything",
+        "The city that never stopped rebuilding itself",
+        "Why the smartest teams ship slower",
+        "Inside the last workshop of its kind",
+        "What a decade of data actually taught us",
+        "The quiet return of handmade things",
+      ];
+      const TAGLINES = [
+        "Built for the way you actually work.",
+        "Small tools, big shifts.",
+        "Less noise, more signal.",
+        "Made to be used, not just admired.",
+        "Where good ideas get finished.",
+      ];
+      const LOREM_WORDS = [
+        "lorem",
+        "ipsum",
+        "dolor",
+        "sit",
+        "amet",
+        "consectetur",
+        "adipiscing",
+        "elit",
+        "sed",
+        "tempor",
+        "incididunt",
+        "labore",
+        "dolore",
+        "magna",
+        "aliqua",
+        "enim",
+        "veniam",
+        "quis",
+        "nostrud",
+        "exercitation",
+      ];
+      const AUTHOR_NAMES = [
+        "Priya Anand",
+        "Marcus Webb",
+        "Sofia Lindqvist",
+        "Daniel Osei",
+        "Elena Rossi",
+        "Tunde Bakare",
+      ];
+      const READ_TIMES = [
+        "2 min read",
+        "4 min read",
+        "6 min read",
+        "8 min read",
+        "11 min read",
+      ];
+
+      const HANDLES = [
+        "@nova.codes",
+        "@thefieldnotes",
+        "@wander.often",
+        "@studio.loop",
+        "@quietsignal",
+        "@ember.made",
+        "@northbound",
+        "@paperand.ink",
+      ];
+      const HASHTAGS = [
+        "#buildinpublic",
+        "#slowliving",
+        "#designdaily",
+        "#morningpages",
+        "#craftedwell",
+        "#nofilter",
+        "#weekendproject",
+        "#smallbatch",
+      ];
+      const POST_CAPTIONS = [
+        "Some days the light just does all the work.",
+        "Still figuring this one out, honestly.",
+        "Back at it after a very long weekend.",
+        "This took three tries and I'm still not sure.",
+        "Sharing because someone asked, finally.",
+      ];
+      const COMMENTS = [
+        "This is exactly what I needed today.",
+        "Okay but the details on this are incredible.",
+        "Saving this for later, thank you!",
+        "How long did this take you?",
+        "Underrated, this deserves more attention.",
+      ];
+      const BIOS = [
+        "Making things, mostly with my hands.",
+        "Coffee first, everything else after.",
+        "Documenting the slow stuff.",
+        "Here for the process, not just the result.",
+      ];
+
+      const JOB_TITLES = [
+        "Product Designer",
+        "Engineering Manager",
+        "Marketing Lead",
+        "Customer Success Associate",
+        "Data Analyst",
+        "Operations Director",
+        "UX Researcher",
+        "Account Executive",
+        "Software Engineer",
+        "People Partner",
+      ];
+      const COMPANIES = [
+        "Nimbus Labs",
+        "Cedarline Co.",
+        "Voyage Systems",
+        "Basin & Co",
+        "Terra Works",
+        "Halo Studio",
+        "Drift Technologies",
+        "Loom Collective",
+      ];
+      const DEPARTMENTS = [
+        "Product",
+        "Engineering",
+        "Marketing",
+        "Sales",
+        "Design",
+        "Operations",
+        "People",
+        "Finance",
+      ];
+
+      const GENERIC_LABELS = [
+        "Title",
+        "Subtitle",
+        "Description",
+        "Placeholder",
+        "Sample Text",
+        "Example Label",
+        "Field Name",
+        "Section Header",
+      ];
+      const FILE_NAMES = [
+        "report-final",
+        "design-export",
+        "summary-v2",
+        "project-brief",
+        "assets-package",
+        "notes-draft",
+      ];
+      const FILE_EXTENSIONS = ["pdf", "docx", "fig", "png", "csv", "zip"];
 
       function pick(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
@@ -866,32 +794,23 @@
         return s;
       }
       function formatDateTime(date) {
-        const dd = padDigits(date.getDate(), 2);
-        const mm = padDigits(date.getMonth() + 1, 2);
-        const yyyy = date.getFullYear();
-        const hh = padDigits(date.getHours(), 2);
-        const min = padDigits(date.getMinutes(), 2);
+        const dd = padDigits(date.getDate(), 2),
+          mm = padDigits(date.getMonth() + 1, 2),
+          yyyy = date.getFullYear();
+        const hh = padDigits(date.getHours(), 2),
+          min = padDigits(date.getMinutes(), 2);
         return `${dd}/${mm}/${yyyy} \u2022 ${hh}:${min}`;
       }
+      function loremSentence(wordCount) {
+        const words = Array.from({ length: wordCount }, () =>
+          pick(LOREM_WORDS),
+        );
+        const s = words.join(" ");
+        return s.charAt(0).toUpperCase() + s.slice(1) + ".";
+      }
 
+      // ================= GENERATORS =================
       const GENERATORS = {
-        fullName: () => `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
-        firstName: () => pick(FIRST_NAMES),
-        lastName: () => pick(LAST_NAMES),
-        email: () => {
-          const first = pick(FIRST_NAMES).toLowerCase();
-          const last = pick(LAST_NAMES).toLowerCase();
-          const domain = pick([
-            "gmail.com",
-            "outlook.com",
-            "proton.me",
-            "yahoo.com",
-          ]);
-          return `${first}.${last}${randomInt(1, 99)}@${domain}`;
-        },
-        phone: () =>
-          `+1 (${randomInt(200, 989)}) ${randomInt(200, 989)}-${padDigits(randomInt(0, 9999), 4)}`,
-        address: () => `${randomInt(10, 9999)} ${pick(STREET_NAMES)}`,
         accountNumber: () => randomDigits(10),
         iban: () =>
           `GB${randomInt(10, 99)} ${pick(["BARC", "HSBC", "LOYD", "NWBK"])} ${randomDigits(4)} ${randomDigits(4)} ${randomDigits(2)}`,
@@ -914,7 +833,7 @@
         currency: () => pick(CURRENCIES),
         bankName: () => pick(BANKS),
         transactionId: () =>
-          `${pick(["OL", "TX", "PY", "RM", "ZX", "QT", "BK", "FN"])}${randomDigits(10)}`,
+          `${pick(["OL", "TX", "PY", "RM", "ZX", "QT"])}${randomDigits(10)}`,
         referenceId: () => `REF${randomDigits(8)}`,
         date: () =>
           formatDateTime(
@@ -926,111 +845,284 @@
           ),
         kycStatus: () =>
           pick(["Verified", "Pending Review", "Rejected", "Under Review"]),
-        status: () => pick(STATUSES),
+        status: () => pick(FIN_STATUSES),
+
+        productName: () => pick(PRODUCTS),
+        price: () => `$${(randomInt(500, 29999) / 100).toFixed(2)}`,
+        orderId: () => `ORD-${randomDigits(7)}`,
+        shippingStatus: () => pick(SHIP_STATUSES),
+        sku: () => `SKU-${pick(["A", "B", "C", "D"])}${randomDigits(5)}`,
+        rating: () => `${(randomInt(10, 50) / 10).toFixed(1)} \u2605`,
+        discountCode: () => `SAVE${randomInt(10, 50)}`,
+        categoryTag: () => pick(CATEGORY_TAGS),
+        quantity: () => String(randomInt(1, 12)),
+        deliveryDate: () =>
+          formatDateTime(new Date(Date.now() + randomInt(1, 10) * 86400000))
+            .split("\u2022")[0]
+            .trim(),
+        stockLevel: () => `${randomInt(0, 500)} in stock`,
         merchantName: () => pick(MERCHANTS),
+
+        headline: () => pick(HEADLINES),
+        tagline: () => pick(TAGLINES),
+        loremParagraph: () =>
+          Array.from({ length: 3 }, () => loremSentence(randomInt(8, 14))).join(
+            " ",
+          ),
+        authorName: () => pick(AUTHOR_NAMES),
+        articleExcerpt: () => loremSentence(randomInt(16, 24)),
+        contentTag: () =>
+          pick([
+            "Design",
+            "Culture",
+            "Process",
+            "Interview",
+            "Essay",
+            "Field Notes",
+          ]),
+        publishDate: () =>
+          formatDateTime(new Date(Date.now() - randomInt(0, 300) * 86400000))
+            .split("\u2022")[0]
+            .trim(),
+        readTime: () => pick(READ_TIMES),
+        commentCount: () => String(randomInt(0, 240)),
+        pullQuote: () => `\u201c${loremSentence(randomInt(6, 10))}\u201d`,
+        caption: () => loremSentence(randomInt(4, 8)),
+
+        username: () => pick(HANDLES),
+        postCaption: () => pick(POST_CAPTIONS),
+        likeCount: () => String(randomInt(3, 12000)),
+        comment: () => pick(COMMENTS),
+        hashtag: () => pick(HASHTAGS),
+        followerCount: () => String(randomInt(50, 480000)),
+        shareCount: () => String(randomInt(0, 900)),
+        bio: () => pick(BIOS),
+        notificationText: () =>
+          pick([
+            "liked your post",
+            "started following you",
+            "commented on your photo",
+            "mentioned you in a comment",
+            "shared your post",
+          ]),
+
+        fullName: () => `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
+        firstName: () => pick(FIRST_NAMES),
+        lastName: () => pick(LAST_NAMES),
+        email: () => {
+          const first = pick(FIRST_NAMES).toLowerCase(),
+            last = pick(LAST_NAMES).toLowerCase();
+          return `${first}.${last}${randomInt(1, 99)}@${pick(["gmail.com", "outlook.com", "proton.me", "yahoo.com"])}`;
+        },
+        phone: () =>
+          `+1 (${randomInt(200, 989)}) ${randomInt(200, 989)}-${padDigits(randomInt(0, 9999), 4)}`,
+        address: () => `${randomInt(10, 9999)} ${pick(STREET_NAMES)}`,
+        jobTitle: () => pick(JOB_TITLES),
+        companyName: () => pick(COMPANIES),
+        avatarInitials: () =>
+          (pick(FIRST_NAMES)[0] + pick(LAST_NAMES)[0]).toUpperCase(),
+        department: () => pick(DEPARTMENTS),
+        employeeId: () => `EMP-${randomDigits(5)}`,
+
+        loremSentence: () => loremSentence(randomInt(6, 12)),
+        genericLabel: () => pick(GENERIC_LABELS),
+        placeholderWord: () => pick(LOREM_WORDS),
+        randomNumber: () => String(randomInt(1, 99999)),
+        yesNo: () => pick(["Yes", "No"]),
+        shortId: () => randomHex(8),
+        url: () =>
+          `https://example.com/${pick(LOREM_WORDS)}-${randomInt(100, 999)}`,
+        fileName: () => `${pick(FILE_NAMES)}.${pick(FILE_EXTENSIONS)}`,
+
         custom: () => "Sample text",
       };
 
+      // ================= CATEGORIES =================
       const CATEGORIES = [
-        { value: "email", label: "Email", keywords: ["email", "e-mail"] },
+        { value: "accountNumber", label: "Account Number", icon: "\u{1F3E6}" },
+        { value: "iban", label: "IBAN", icon: "\u{1F3E6}" },
+        { value: "cardNumber", label: "Card Number", icon: "\u{1F4B3}" },
+        { value: "cardExpiry", label: "Card Expiry", icon: "\u{1F4B3}" },
+        { value: "cvv", label: "CVV", icon: "\u{1F510}" },
+        { value: "cryptoAddress", label: "Crypto Address", icon: "\u{1FA99}" },
+        { value: "currencyAmount", label: "Amount", icon: "\u{1F4B5}" },
+        { value: "balance", label: "Balance", icon: "\u{1F4B0}" },
+        { value: "percentage", label: "Percentage", icon: "\u{1F4C8}" },
+        { value: "currency", label: "Currency Code", icon: "\u{1F4B1}" },
+        { value: "bankName", label: "Bank Name", icon: "\u{1F3DB}\uFE0F" },
+        { value: "transactionId", label: "Transaction ID", icon: "\u{1F9FE}" },
+        { value: "referenceId", label: "Reference ID", icon: "\u{1F9FE}" },
+        { value: "date", label: "Date & Time", icon: "\u{1F4C5}" },
+        { value: "kycStatus", label: "KYC Status", icon: "\u2705" },
+        { value: "status", label: "Status", icon: "\u{1F535}" },
+
         {
-          value: "phone",
-          label: "Phone Number",
-          keywords: ["phone", "mobile", "tel"],
+          value: "productName",
+          label: "Product Name",
+          icon: "\u{1F6CD}\uFE0F",
         },
-        { value: "iban", label: "IBAN", keywords: ["iban"] },
+        { value: "price", label: "Price", icon: "\u{1F4B5}" },
+        { value: "orderId", label: "Order ID", icon: "\u{1F4E6}" },
         {
-          value: "cardNumber",
-          label: "Card Number",
-          keywords: ["card number", "cardnumber", "card-number", "pan"],
+          value: "shippingStatus",
+          label: "Shipping Status",
+          icon: "\u{1F69A}",
         },
+        { value: "sku", label: "SKU", icon: "\u{1F3F7}\uFE0F" },
+        { value: "rating", label: "Star Rating", icon: "\u2B50" },
+        { value: "discountCode", label: "Discount Code", icon: "\u{1F3AB}" },
         {
-          value: "cardExpiry",
-          label: "Card Expiry",
-          keywords: ["expiry", "exp date", "expdate", "exp-date"],
+          value: "categoryTag",
+          label: "Category Tag",
+          icon: "\u{1F3F7}\uFE0F",
         },
-        { value: "cvv", label: "CVV", keywords: ["cvv", "cvc"] },
+        { value: "quantity", label: "Quantity", icon: "\u{1F522}" },
+        { value: "deliveryDate", label: "Delivery Date", icon: "\u{1F4C5}" },
+        { value: "stockLevel", label: "Stock Level", icon: "\u{1F4CA}" },
+        { value: "merchantName", label: "Merchant Name", icon: "\u{1F3EA}" },
+
+        { value: "headline", label: "Headline", icon: "\u{1F4F0}" },
+        { value: "tagline", label: "Tagline", icon: "\u2728" },
+        { value: "loremParagraph", label: "Paragraph", icon: "\u{1F4C4}" },
+        { value: "authorName", label: "Author Name", icon: "\u270D\uFE0F" },
+        { value: "articleExcerpt", label: "Excerpt", icon: "\u{1F4C4}" },
+        { value: "contentTag", label: "Content Tag", icon: "\u{1F3F7}\uFE0F" },
+        { value: "publishDate", label: "Publish Date", icon: "\u{1F4C5}" },
+        { value: "readTime", label: "Read Time", icon: "\u23F1\uFE0F" },
+        { value: "commentCount", label: "Comment Count", icon: "\u{1F4AC}" },
+        { value: "pullQuote", label: "Pull Quote", icon: "\u{1F4AC}" },
+        { value: "caption", label: "Caption", icon: "\u{1F4DD}" },
+
+        { value: "username", label: "Username", icon: "\u{1F464}" },
+        { value: "postCaption", label: "Post Caption", icon: "\u{1F4DD}" },
+        { value: "likeCount", label: "Like Count", icon: "\u2764\uFE0F" },
+        { value: "comment", label: "Comment", icon: "\u{1F4AC}" },
+        { value: "hashtag", label: "Hashtag", icon: "#\uFE0F\u20E3" },
+        { value: "followerCount", label: "Follower Count", icon: "\u{1F465}" },
+        { value: "shareCount", label: "Share Count", icon: "\u{1F501}" },
+        { value: "bio", label: "Bio", icon: "\u{1F4C3}" },
+        { value: "notificationText", label: "Notification", icon: "\u{1F514}" },
+
+        { value: "fullName", label: "Full Name", icon: "\u{1F464}" },
+        { value: "firstName", label: "First Name", icon: "\u{1F464}" },
+        { value: "lastName", label: "Last Name", icon: "\u{1F464}" },
+        { value: "email", label: "Email", icon: "\u{1F4E7}" },
+        { value: "phone", label: "Phone", icon: "\u{1F4DE}" },
+        { value: "address", label: "Address", icon: "\u{1F4CD}" },
+        { value: "jobTitle", label: "Job Title", icon: "\u{1F4BC}" },
+        { value: "companyName", label: "Company", icon: "\u{1F3E2}" },
         {
-          value: "cryptoAddress",
-          label: "Crypto Address",
-          keywords: [
-            "wallet",
-            "crypto address",
-            "crypto-address",
-            "wallet address",
+          value: "avatarInitials",
+          label: "Avatar Initials",
+          icon: "\u{1F5BC}\uFE0F",
+        },
+        { value: "department", label: "Department", icon: "\u{1F465}" },
+        { value: "employeeId", label: "Employee ID", icon: "\u{1F194}" },
+
+        { value: "loremSentence", label: "Lorem Sentence", icon: "\u{1F4C4}" },
+        { value: "genericLabel", label: "Label", icon: "\u{1F3F7}\uFE0F" },
+        { value: "placeholderWord", label: "Word", icon: "\u{1F524}" },
+        { value: "randomNumber", label: "Number", icon: "\u{1F522}" },
+        { value: "yesNo", label: "Yes / No", icon: "\u2705" },
+        { value: "shortId", label: "Short ID", icon: "\u{1F194}" },
+        { value: "url", label: "URL", icon: "\u{1F517}" },
+        { value: "fileName", label: "File Name", icon: "\u{1F4C1}" },
+        { value: "custom", label: "Custom / Other", icon: "\u2728" },
+      ];
+
+      // ================= GROUPS =================
+      const GROUPS = [
+        {
+          id: "fintech",
+          label: "Fintech",
+          icon: "\u{1F4B3}",
+          pinned: [
+            "currencyAmount",
+            "accountNumber",
+            "bankName",
+            "status",
+            "transactionId",
+          ],
+          categories: [
+            "accountNumber",
+            "iban",
+            "cardNumber",
+            "cardExpiry",
+            "cvv",
+            "cryptoAddress",
+            "currencyAmount",
+            "balance",
+            "percentage",
+            "currency",
+            "bankName",
+            "transactionId",
+            "referenceId",
+            "date",
+            "kycStatus",
+            "status",
           ],
         },
         {
-          value: "accountNumber",
-          label: "Account Number",
-          keywords: ["account number", "account-number", "acct", "account no"],
+          id: "commerce",
+          label: "Commerce",
+          icon: "\u{1F6CD}\uFE0F",
+          pinned: ["productName", "price", "orderId", "shippingStatus"],
+          categories: [
+            "productName",
+            "price",
+            "orderId",
+            "shippingStatus",
+            "sku",
+            "rating",
+            "discountCode",
+            "categoryTag",
+            "quantity",
+            "deliveryDate",
+            "stockLevel",
+            "merchantName",
+          ],
         },
         {
-          value: "transactionId",
-          label: "Transaction ID",
-          keywords: ["transaction", "txn"],
+          id: "content",
+          label: "Content",
+          icon: "\u{1F4C4}",
+          pinned: ["headline", "tagline", "loremParagraph", "authorName"],
+          categories: [
+            "headline",
+            "tagline",
+            "loremParagraph",
+            "authorName",
+            "articleExcerpt",
+            "contentTag",
+            "publishDate",
+            "readTime",
+            "commentCount",
+            "pullQuote",
+            "caption",
+          ],
         },
         {
-          value: "referenceId",
-          label: "Reference ID",
-          keywords: ["reference", "ref id", "ref-id", "refid"],
-        },
-        { value: "balance", label: "Balance", keywords: ["balance"] },
-        {
-          value: "currencyAmount",
-          label: "Amount",
-          keywords: ["amount", "price", "total", "fee"],
-        },
-        {
-          value: "percentage",
-          label: "Percentage",
-          keywords: ["percent", "rate", "apr", "interest"],
-        },
-        {
-          value: "currency",
-          label: "Currency Code",
-          keywords: ["currency code", "currency"],
-        },
-        { value: "bankName", label: "Bank Name", keywords: ["bank"] },
-        {
-          value: "kycStatus",
-          label: "KYC Status",
-          keywords: ["kyc", "verification status"],
-        },
-        { value: "status", label: "Status", keywords: ["status"] },
-        {
-          value: "date",
-          label: "Date & Time",
-          keywords: ["date", "timestamp", "time"],
+          id: "social",
+          label: "Social",
+          icon: "\u{1F4AC}",
+          pinned: ["username", "postCaption", "likeCount", "hashtag"],
+          categories: [
+            "username",
+            "postCaption",
+            "likeCount",
+            "comment",
+            "hashtag",
+            "followerCount",
+            "shareCount",
+            "bio",
+            "notificationText",
+          ],
         },
         {
-          value: "merchantName",
-          label: "Merchant Name",
-          keywords: ["merchant", "vendor", "store"],
-        },
-        { value: "address", label: "Address", keywords: ["address", "street"] },
-        {
-          value: "firstName",
-          label: "First Name",
-          keywords: ["first name", "firstname", "given name"],
-        },
-        {
-          value: "lastName",
-          label: "Last Name",
-          keywords: ["last name", "lastname", "surname"],
-        },
-        {
-          value: "fullName",
-          label: "Full Name",
-          keywords: ["name", "customer", "holder", "account holder"],
-        },
-        { value: "custom", label: "Custom / Other", keywords: [] },
-      ];
-
-      const GROUPS = [
-        {
-          id: "personal",
-          label: "Personal Info",
+          id: "people",
+          label: "People",
+          icon: "\u{1F464}",
+          pinned: ["fullName", "email", "phone", "jobTitle"],
           categories: [
             "fullName",
             "firstName",
@@ -1038,586 +1130,218 @@
             "email",
             "phone",
             "address",
+            "jobTitle",
+            "companyName",
+            "avatarInitials",
+            "department",
+            "employeeId",
           ],
         },
         {
-          id: "card",
-          label: "Card",
-          categories: ["cardNumber", "cardExpiry", "cvv"],
-        },
-        {
-          id: "account",
-          label: "Account & Banking",
+          id: "generic",
+          label: "Generic",
+          icon: "\u2728",
+          pinned: [
+            "loremSentence",
+            "genericLabel",
+            "placeholderWord",
+            "randomNumber",
+          ],
           categories: [
-            "accountNumber",
-            "iban",
-            "bankName",
-            "balance",
-            "cryptoAddress",
+            "loremSentence",
+            "genericLabel",
+            "placeholderWord",
+            "randomNumber",
+            "yesNo",
+            "shortId",
+            "url",
+            "fileName",
+            "custom",
           ],
         },
-        {
-          id: "transaction",
-          label: "Transaction",
-          categories: [
-            "transactionId",
-            "referenceId",
-            "currencyAmount",
-            "currency",
-            "percentage",
-            "date",
-            "status",
-            "merchantName",
-          ],
-        },
-        {
-          id: "verification",
-          label: "Verification",
-          categories: ["kycStatus"],
-        },
-        { id: "other", label: "Other / Custom", categories: ["custom"] },
       ];
-      function groupForCategory(catValue) {
-        const g = GROUPS.find((g) => g.categories.includes(catValue));
-        return g ? g.id : "other";
-      }
-      function groupLabel(groupId) {
-        const g = GROUPS.find((g) => g.id === groupId);
-        return g ? g.label : "Other";
+
+      function catByValue(v) {
+        return CATEGORIES.find((c) => c.value === v);
       }
 
-      // ---------- Guessing: name first, then content pattern as fallback ----------
-      function guessCategory(name, content) {
-        const lowerName = (name || "").toLowerCase();
-        for (const cat of CATEGORIES) {
-          if (cat.keywords.some((kw) => lowerName.includes(kw))) {
-            return { category: cat.value, source: "name" };
-          }
-        }
+      // ================= APP STATE =================
+      let currentSelection = []; // [{layerId, layerName, originalText}]
+      let activeTab = "fintech";
+      let moreOpen = false;
+      let searchQuery = "";
+      let lastFillBatch = null; // { label, items: [{layerId, value}] } for undo
 
-        const c = (content || "").trim();
-        if (!c) return { category: "custom", source: null };
-        const cLower = c.toLowerCase();
+      const selectionPill = document.getElementById("selectionPill");
+      const pickerArea = document.getElementById("pickerArea");
+      const toastArea = document.getElementById("toastArea");
+      const searchInput = document.getElementById("searchInput");
+      const searchClear = document.getElementById("searchClear");
 
-        // Cross-check against our own known lists first -- highest confidence content signals
-        if (BANKS.some((b) => b.toLowerCase() === cLower))
-          return { category: "bankName", source: "content" };
-        if (MERCHANTS.some((m) => m.toLowerCase() === cLower))
-          return { category: "merchantName", source: "content" };
-        if (STATUSES.some((s) => s.toLowerCase() === cLower))
-          return { category: "status", source: "content" };
-        if (
-          ["verified", "pending review", "rejected", "under review"].includes(
-            cLower,
-          )
-        )
-          return { category: "kycStatus", source: "content" };
-        if (CURRENCIES.includes(c.toUpperCase()) && c.length <= 5)
-          return { category: "currency", source: "content" };
-
-        // Pattern-based signals
-        if (/^[\w.+-]+@[\w-]+\.[a-z]{2,}$/i.test(c))
-          return { category: "email", source: "content" };
-        if (
-          /^0x[a-f0-9]{40}$/i.test(c) ||
-          /^(bc1|[13])[a-zA-Z0-9]{25,}$/.test(c)
-        )
-          return { category: "cryptoAddress", source: "content" };
-        if (/^\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}$/.test(c))
-          return { category: "cardNumber", source: "content" };
-        if (/^\d{2}\/\d{2,4}$/.test(c))
-          return { category: "cardExpiry", source: "content" };
-        if (/^[\$£€₦¥₹₩]\s?[\d,]+(\.\d{2})?$/.test(c))
-          return { category: "currencyAmount", source: "content" };
-        if (/^[\d,]+\.\d{2}$/.test(c))
-          return { category: "currencyAmount", source: "content" };
-        if (
-          /^\d{1,2}\/\d{1,2}\/\d{2,4}/.test(c) ||
-          /^\d{4}-\d{2}-\d{2}/.test(c)
-        )
-          return { category: "date", source: "content" };
-        if (/^\+?[\d\s\-()]{9,}$/.test(c) && /\d{6,}/.test(c))
-          return { category: "phone", source: "content" };
-        if (/^\d{9,12}$/.test(c))
-          return { category: "accountNumber", source: "content" };
-        if (/^\d{3}$/.test(c)) return { category: "cvv", source: "content" };
-        if (/^\d+(\.\d+)?%$/.test(c))
-          return { category: "percentage", source: "content" };
-        if (/^[A-Z]{2,4}\d/.test(c))
-          return { category: "transactionId", source: "content" };
-        if (
-          /,\s*[A-Za-z\s]+(Ave|St|Rd|Blvd|Lane|Drive|Dr)\b/i.test(c) ||
-          /^\d+\s+[A-Za-z\s]+(Ave|St|Rd|Blvd|Lane|Drive|Dr)\b/i.test(c)
-        )
-          return { category: "address", source: "content" };
-
-        // Name cross-check: does content contain a known first or last name?
-        const words = c.split(/\s+/).filter(Boolean);
-        if (words.length >= 2 && words.length <= 3) {
-          const firstMatch = FIRST_NAMES.some(
-            (n) => n.toLowerCase() === words[0].toLowerCase(),
-          );
-          const lastMatch = LAST_NAMES.some(
-            (n) => n.toLowerCase() === words[words.length - 1].toLowerCase(),
-          );
-          if (firstMatch || lastMatch)
-            return { category: "fullName", source: "content" };
-        }
-        // Weaker fallback: looks like Title Case Words (a plausible name even if not in our list)
-        if (
-          words.length >= 2 &&
-          words.length <= 3 &&
-          words.every((w) => /^[A-Z][a-z'-]+$/.test(w))
-        ) {
-          return { category: "fullName", source: "content" };
-        }
-        if (
-          words.length === 1 &&
-          /^[A-Z][a-z'-]+$/.test(words[0]) &&
-          FIRST_NAMES.some((n) => n.toLowerCase() === words[0].toLowerCase())
-        ) {
-          return { category: "firstName", source: "content" };
-        }
-
-        return { category: "custom", source: null };
-      }
-
-      function generateValue(category) {
-        const fn = GENERATORS[category] || GENERATORS.custom;
-        return fn();
-      }
-
-      // ---------- App state ----------
-      let currentResults = [];
-      let isScanning = false;
-
-      const scanBtn = document.getElementById("scanBtn");
-      const subtitle = document.getElementById("subtitle");
-      const resultsEl = document.getElementById("results");
-
-      scanBtn.onclick = () => {
-        if (isScanning) return;
-        isScanning = true;
-        resultsEl.innerHTML =
-          '<div class="status-text"><span class="spinner"></span>Scanning for text layers...</div>';
-        subtitle.textContent = "Working...";
-        scanBtn.disabled = true;
-        parent.postMessage({ pluginMessage: { type: "scan" } }, "*");
-      };
+      searchInput.addEventListener("input", () => {
+        searchQuery = searchInput.value;
+        searchClear.style.display = searchQuery ? "" : "none";
+        renderPicker();
+      });
+      searchClear.addEventListener("click", () => {
+        searchQuery = "";
+        searchInput.value = "";
+        searchClear.style.display = "none";
+        renderPicker();
+        searchInput.focus();
+      });
 
       window.onmessage = (event) => {
         const msg = event.data.pluginMessage;
         if (!msg) return;
 
-        if (msg.type === "scan-error") {
-          isScanning = false;
-          scanBtn.disabled = false;
-          subtitle.textContent = msg.message;
-          resultsEl.innerHTML = "";
-        }
-
-        if (msg.type === "scan-complete") {
-          isScanning = false;
-          scanBtn.disabled = false;
-          currentResults = msg.results.map((r, i) => {
-            const guess = guessCategory(r.layerName, r.originalText);
-            return {
-              ...r,
-              _uid: i,
-              category: guess.category,
-              source: guess.source,
-              preview: generateValue(guess.category),
-              applied: false,
-              _checked: false,
-            };
-          });
-          renderResults();
+        if (msg.type === "selection-updated") {
+          currentSelection = msg.layers;
+          renderSelectionPill();
         }
 
         if (msg.type === "write-complete") {
-          msg.results.forEach((res) => {
-            const item = currentResults.find((r) => r.layerId === res.layerId);
-            if (!item || !res.success) return;
-            if (msg.purpose === "apply") {
-              item.applied = true;
-            } else if (msg.purpose === "undo") {
-              item.applied = false;
-              item.preview = generateValue(item.category);
-            }
-          });
-          renderResults();
+          if (msg.purpose === "apply") {
+            // lastFillBatch already set optimistically before sending; nothing further needed
+          } else if (msg.purpose === "undo") {
+            toastArea.innerHTML = "";
+            lastFillBatch = null;
+          }
         }
       };
 
-      function renderResults() {
-        if (currentResults.length === 0) {
-          subtitle.textContent = "No text layers found.";
-          resultsEl.innerHTML = `<div class="empty-state"><span class="big-check">\u2713</span>Nothing to fill here.</div>`;
+      function renderSelectionPill() {
+        const n = currentSelection.length;
+        if (n === 0) {
+          selectionPill.className = "selection-pill glass";
+          selectionPill.innerHTML = `<span class="sel-text"><span class="dot"></span>No text layers selected</span>`;
+        } else {
+          selectionPill.className = "selection-pill glass active";
+          selectionPill.innerHTML = `<span class="sel-text"><span class="dot"></span>${n} text layer${n === 1 ? "" : "s"} selected</span>`;
+        }
+      }
+
+      function shakeSelectionPill() {
+        selectionPill.classList.remove("shake");
+        void selectionPill.offsetWidth;
+        selectionPill.classList.add("shake");
+      }
+
+      function renderPicker() {
+        const existingTabRow = pickerArea.querySelector(".tab-row");
+        const savedTabScroll = existingTabRow ? existingTabRow.scrollLeft : 0;
+
+        let html = "";
+
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          const matches = CATEGORIES.filter((c) =>
+            c.label.toLowerCase().includes(q),
+          );
+          html += `<div class="group-block">
+          <div class="group-label">Search results</div>
+          ${matches.length === 0 ? `<p class="empty-note">No categories match "${escapeHtml(searchQuery)}"</p>` : `<div class="cat-grid">${matches.map(renderCatBtn).join("")}</div>`}
+        </div>`;
+        } else {
+          html += `<div class="tab-row">
+          ${GROUPS.map((g) => `<button class="tab-chip ${g.id === activeTab ? "active" : ""}" data-tab="${g.id}">${g.icon} ${escapeHtml(g.label)}</button>`).join("")}
+        </div>`;
+
+          const group = GROUPS.find((g) => g.id === activeTab) || GROUPS[0];
+          const pinned = group.pinned.map(catByValue).filter(Boolean);
+          const rest = group.categories
+            .filter((v) => !group.pinned.includes(v))
+            .map(catByValue)
+            .filter(Boolean);
+
+          html += `<div class="group-block">
+          <div class="cat-grid">${pinned.map(renderCatBtn).join("")}</div>
+          ${rest.length > 0 ? `<button class="more-toggle" id="moreToggle">${moreOpen ? "Show less" : `More in ${escapeHtml(group.label)} (${rest.length})`}</button>` : ""}
+          ${moreOpen ? `<div class="cat-grid" style="margin-top:8px;">${rest.map(renderCatBtn).join("")}</div>` : ""}
+        </div>`;
+        }
+
+        pickerArea.innerHTML = html;
+        attachPickerHandlers();
+
+        const newTabRow = pickerArea.querySelector(".tab-row");
+        if (newTabRow) newTabRow.scrollLeft = savedTabScroll;
+      }
+
+      function renderCatBtn(c) {
+        return `<button class="cat-btn" data-cat="${c.value}"><span class="cat-icon">${c.icon}</span><span class="cat-label">${escapeHtml(c.label)}</span></button>`;
+      }
+
+      function attachPickerHandlers() {
+        document.querySelectorAll(".tab-chip").forEach((btn) => {
+          btn.onclick = () => {
+            activeTab = btn.getAttribute("data-tab");
+            moreOpen = false;
+            renderPicker();
+          };
+        });
+
+        const moreToggle = document.getElementById("moreToggle");
+        if (moreToggle) {
+          moreToggle.onclick = () => {
+            moreOpen = !moreOpen;
+            renderPicker();
+          };
+        }
+
+        document.querySelectorAll(".cat-btn").forEach((btn) => {
+          btn.onclick = () => fillSelection(btn.getAttribute("data-cat"));
+        });
+      }
+
+      function fillSelection(category) {
+        if (currentSelection.length === 0) {
+          shakeSelectionPill();
           return;
         }
 
-        const appliedCount = currentResults.filter((r) => r.applied).length;
-        const pendingCount = currentResults.length - appliedCount;
-        subtitle.textContent =
-          `${currentResults.length} text layer${currentResults.length === 1 ? "" : "s"} found` +
-          (appliedCount ? ` \u00b7 ${appliedCount} applied` : "");
+        const items = currentSelection.map((l) => ({
+          layerId: l.layerId,
+          value: GENERATORS[category]
+            ? GENERATORS[category]()
+            : GENERATORS.custom(),
+        }));
+        const undoItems = currentSelection.map((l) => ({
+          layerId: l.layerId,
+          value: l.originalText,
+        }));
+        const label = catByValue(category)
+          ? catByValue(category).label
+          : category;
 
-        let legendHtml = `
-        <div class="legend">
-          <span class="legend-item"><span class="legend-dot detected-dot"></span>Detected from layer name</span>
-          <span class="legend-item"><span class="legend-dot guessed-dot"></span>Guessed from content</span>
-          <span class="legend-item"><span class="legend-dot manual-dot"></span>Needs your pick</span>
+        lastFillBatch = { label, undoItems };
+
+        toastArea.innerHTML = `
+        <div class="toast glass">
+          <span class="toast-text">Filled ${items.length} layer${items.length === 1 ? "" : "s"} with ${escapeHtml(label)}</span>
+          <button class="toast-undo" id="toastUndoBtn">Undo</button>
         </div>
       `;
+        document.getElementById("toastUndoBtn").onclick = undoLastFill;
 
-        let actionHtml = "";
-        if (pendingCount > 0) {
-          actionHtml += `<button class="apply-all-btn" id="applyAllBtn">Apply All (${pendingCount})</button>`;
-        }
-        if (appliedCount > 0) {
-          actionHtml += `<button class="undo-all-btn" id="undoAllBtn">Undo All (${appliedCount})</button>`;
-        }
-
-        const checkedCount = currentResults.filter(
-          (r) => r._checked && !r.applied,
-        ).length;
-        if (checkedCount > 0) {
-          actionHtml += `
-          <div class="bulk-bar">
-            <span class="bulk-count">${checkedCount} selected</span>
-            <select id="bulkCategorySelect">
-              <option value="">Set category to\u2026</option>
-              ${renderCategoryOptions(null)}
-            </select>
-            <button class="bulk-apply-btn" id="bulkApplyBtn">Set</button>
-            <button class="bulk-clear-btn" id="bulkClearBtn" title="Clear selection">\u2715</button>
-          </div>
-        `;
-        }
-
-        let groupsHtml = "";
-        const groupsPresent = {};
-        currentResults.forEach((item) => {
-          const gid = groupForCategory(item.category);
-          if (!groupsPresent[gid]) groupsPresent[gid] = [];
-          groupsPresent[gid].push(item);
-        });
-
-        const presentGroups = GROUPS.filter(
-          (g) => groupsPresent[g.id] && groupsPresent[g.id].length > 0,
+        parent.postMessage(
+          { pluginMessage: { type: "write", items, purpose: "apply" } },
+          "*",
         );
-        let navHtml = "";
-        if (presentGroups.length > 1) {
-          navHtml = `
-          <div class="group-nav">
-            ${presentGroups.map((g) => `<button class="group-chip" data-target="group-${g.id}">${escapeHtml(g.label)} \u00b7 ${groupsPresent[g.id].length}</button>`).join("")}
-          </div>
-        `;
-        }
-
-        GROUPS.forEach((g) => {
-          const items = groupsPresent[g.id];
-          if (!items || items.length === 0) return;
-          const selectableItems = items.filter((it) => !it.applied);
-          const allChecked =
-            selectableItems.length > 0 &&
-            selectableItems.every((it) => it._checked);
-          const groupSelectAll =
-            selectableItems.length > 0
-              ? `<input type="checkbox" class="group-select-all" data-group="${g.id}" ${allChecked ? "checked" : ""} title="Select all in ${escapeHtml(g.label)}">`
-              : "";
-          const pendingInGroup = items.filter((it) => !it.applied).length;
-          const groupApplyBtn =
-            pendingInGroup > 0
-              ? `<button class="group-apply-btn" data-group="${g.id}">Apply (${pendingInGroup})</button>`
-              : "";
-          groupsHtml += `
-          <div class="group-section" id="group-${g.id}">
-            <div class="group-header">
-              <div class="group-header-left">
-                ${groupSelectAll}
-                <span class="group-title">${escapeHtml(g.label)}</span>
-              </div>
-              <div class="group-header-right">
-                ${groupApplyBtn}
-                <span class="group-count">${items.length}</span>
-              </div>
-            </div>
-            ${items.map((item) => renderRow(item)).join("")}
-          </div>
-        `;
-        });
-
-        const toolbarHtml =
-          actionHtml || navHtml
-            ? `<div class="sticky-toolbar">${navHtml}${actionHtml}</div>`
-            : "";
-        resultsEl.innerHTML = legendHtml + toolbarHtml + groupsHtml;
-        attachHandlers();
       }
 
-      function renderCategoryOptions(selectedValue) {
-        return GROUPS.map((g) => {
-          const catsInGroup = CATEGORIES.filter((c) =>
-            g.categories.includes(c.value),
-          );
-          if (catsInGroup.length === 0) return "";
-          const opts = catsInGroup
-            .map(
-              (c) =>
-                `<option value="${c.value}" ${c.value === selectedValue ? "selected" : ""}>${escapeHtml(c.label)}</option>`,
-            )
-            .join("");
-          return `<optgroup label="${escapeHtml(g.label)}">${opts}</optgroup>`;
-        }).join("");
-      }
-
-      function renderRow(item) {
-        const options = renderCategoryOptions(item.category);
-
-        let badge, cardClass;
-        if (item.applied) {
-          badge = `<span class="badge applied">\u2713 applied</span>`;
-          cardClass = "is-applied";
-        } else if (item.source === "name") {
-          badge = `<span class="badge detected">detected</span>`;
-          cardClass = "is-detected";
-        } else if (item.source === "content") {
-          badge = `<span class="badge guessed">guessed</span>`;
-          cardClass = "is-guessed";
-        } else {
-          badge = `<span class="badge manual">pick type</span>`;
-          cardClass = "";
-        }
-
-        const currentLine = item.originalText
-          ? `current: "${item.originalText.length > 36 ? item.originalText.slice(0, 36) + "\u2026" : item.originalText}"`
-          : "current: (empty)";
-
-        return `
-        <div class="row-card ${cardClass}">
-          <div class="row-top">
-            ${item.applied ? "" : `<input type="checkbox" class="row-checkbox" data-uid="${item._uid}" ${item._checked ? "checked" : ""}>`}
-            <div class="row-name">${escapeHtml(item.layerName)}</div>
-            <button class="inspect-btn" data-layer-id="${item.layerId}" title="Select this layer in Figma">\u{1F441}</button>
-            ${badge}
-          </div>
-          <div class="row-current">${escapeHtml(currentLine)}</div>
-          ${
-            item.applied
-              ? ""
-              : `
-            <div class="row-action">
-              <select id="select-${item._uid}" data-uid="${item._uid}">${options}</select>
-            </div>
-          `
-          }
-          <div class="preview-row ${item.applied ? "applied-row" : ""}">
-            <span class="preview-label">${item.applied ? "now" : "will become"}</span>
-            <span class="preview-value">${escapeHtml(item.preview)}</span>
-            ${item.applied ? "" : `<button class="reroll-btn" data-uid="${item._uid}" title="Get a different value">\u{1F504}</button>`}
-          </div>
-          <div class="row-buttons">
-            ${
-              item.applied
-                ? `<button class="undo-btn" data-uid="${item._uid}">Undo</button>`
-                : `<button class="apply-btn" data-uid="${item._uid}">Apply</button>`
-            }
-          </div>
-        </div>
-      `;
-      }
-
-      function attachHandlers() {
-        const applyAllBtn = document.getElementById("applyAllBtn");
-        if (applyAllBtn) {
-          applyAllBtn.onclick = () => {
-            const items = currentResults
-              .filter((r) => !r.applied)
-              .map((r) => ({ layerId: r.layerId, value: r.preview }));
-            applyAllBtn.disabled = true;
-            applyAllBtn.innerHTML = '<span class="spinner"></span>Applying...';
-            parent.postMessage(
-              { pluginMessage: { type: "write", items, purpose: "apply" } },
-              "*",
-            );
-          };
-        }
-
-        const undoAllBtn = document.getElementById("undoAllBtn");
-        if (undoAllBtn) {
-          undoAllBtn.onclick = () => {
-            const items = currentResults
-              .filter((r) => r.applied)
-              .map((r) => ({ layerId: r.layerId, value: r.originalText }));
-            undoAllBtn.disabled = true;
-            undoAllBtn.textContent = "Undoing...";
-            parent.postMessage(
-              { pluginMessage: { type: "write", items, purpose: "undo" } },
-              "*",
-            );
-          };
-        }
-
-        document.querySelectorAll(".group-apply-btn").forEach((btn) => {
-          btn.onclick = () => {
-            const gid = btn.getAttribute("data-group");
-            const items = currentResults
-              .filter((r) => !r.applied && groupForCategory(r.category) === gid)
-              .map((r) => ({ layerId: r.layerId, value: r.preview }));
-            btn.disabled = true;
-            btn.textContent = "...";
-            parent.postMessage(
-              { pluginMessage: { type: "write", items, purpose: "apply" } },
-              "*",
-            );
-          };
-        });
-
-        document.querySelectorAll(".group-chip").forEach((chip) => {
-          chip.onclick = () => {
-            const target = document.getElementById(
-              chip.getAttribute("data-target"),
-            );
-            const wrapper = document.getElementById("resultsWrapper");
-            const toolbar = document.querySelector(".sticky-toolbar");
-            if (!target || !wrapper) return;
-            const toolbarHeight = toolbar
-              ? toolbar.getBoundingClientRect().height
-              : 0;
-            const wrapperRect = wrapper.getBoundingClientRect();
-            const targetRect = target.getBoundingClientRect();
-            const offset =
-              targetRect.top -
-              wrapperRect.top +
-              wrapper.scrollTop -
-              toolbarHeight -
-              8;
-            wrapper.scrollTo({ top: offset, behavior: "smooth" });
-          };
-        });
-
-        document.querySelectorAll(".row-checkbox").forEach((cb) => {
-          cb.onchange = () => {
-            const uid = Number(cb.getAttribute("data-uid"));
-            const item = currentResults.find((r) => r._uid === uid);
-            if (!item) return;
-            item._checked = cb.checked;
-            renderResults();
-          };
-        });
-
-        document.querySelectorAll(".group-select-all").forEach((cb) => {
-          cb.onchange = () => {
-            const gid = cb.getAttribute("data-group");
-            currentResults.forEach((r) => {
-              if (!r.applied && groupForCategory(r.category) === gid) {
-                r._checked = cb.checked;
-              }
-            });
-            renderResults();
-          };
-        });
-
-        const bulkApplyBtn = document.getElementById("bulkApplyBtn");
-        if (bulkApplyBtn) {
-          bulkApplyBtn.onclick = () => {
-            const bulkSelect = document.getElementById("bulkCategorySelect");
-            const newCategory = bulkSelect.value;
-            if (!newCategory) return;
-            currentResults.forEach((item) => {
-              if (item._checked && !item.applied) {
-                item.category = newCategory;
-                item.source = "name";
-                item.preview = generateValue(newCategory);
-                item._checked = false;
-              }
-            });
-            renderResults();
-          };
-        }
-
-        const bulkClearBtn = document.getElementById("bulkClearBtn");
-        if (bulkClearBtn) {
-          bulkClearBtn.onclick = () => {
-            currentResults.forEach((item) => {
-              item._checked = false;
-            });
-            renderResults();
-          };
-        }
-
-        document.querySelectorAll('select[id^="select-"]').forEach((sel) => {
-          sel.onchange = () => {
-            const uid = Number(sel.getAttribute("data-uid"));
-            const item = currentResults.find((r) => r._uid === uid);
-            if (!item) return;
-            item.category = sel.value;
-            item.source = "name";
-            item.preview = generateValue(item.category);
-            renderResults();
-          };
-        });
-
-        document.querySelectorAll(".reroll-btn").forEach((btn) => {
-          btn.onclick = () => {
-            const uid = Number(btn.getAttribute("data-uid"));
-            const item = currentResults.find((r) => r._uid === uid);
-            if (!item) return;
-            item.preview = generateValue(item.category);
-            renderResults();
-          };
-        });
-
-        document.querySelectorAll(".apply-btn").forEach((btn) => {
-          btn.onclick = () => {
-            const uid = Number(btn.getAttribute("data-uid"));
-            const item = currentResults.find((r) => r._uid === uid);
-            if (!item) return;
-            btn.disabled = true;
-            btn.textContent = "...";
-            parent.postMessage(
-              {
-                pluginMessage: {
-                  type: "write",
-                  items: [{ layerId: item.layerId, value: item.preview }],
-                  purpose: "apply",
-                },
-              },
-              "*",
-            );
-          };
-        });
-
-        document.querySelectorAll(".undo-btn").forEach((btn) => {
-          btn.onclick = () => {
-            const uid = Number(btn.getAttribute("data-uid"));
-            const item = currentResults.find((r) => r._uid === uid);
-            if (!item) return;
-            btn.disabled = true;
-            btn.textContent = "...";
-            parent.postMessage(
-              {
-                pluginMessage: {
-                  type: "write",
-                  items: [{ layerId: item.layerId, value: item.originalText }],
-                  purpose: "undo",
-                },
-              },
-              "*",
-            );
-          };
-        });
-
-        document.querySelectorAll(".inspect-btn").forEach((btn) => {
-          btn.onclick = () => {
-            const layerId = btn.getAttribute("data-layer-id");
-            parent.postMessage(
-              { pluginMessage: { type: "inspect", layerId } },
-              "*",
-            );
-          };
-        });
+      function undoLastFill() {
+        if (!lastFillBatch) return;
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "write",
+              items: lastFillBatch.undoItems,
+              purpose: "undo",
+            },
+          },
+          "*",
+        );
       }
 
       function escapeHtml(str) {
@@ -1625,6 +1349,9 @@
         div.textContent = str;
         return div.innerHTML;
       }
+
+      renderSelectionPill();
+      renderPicker();
     </script>
   </body>
 </html>

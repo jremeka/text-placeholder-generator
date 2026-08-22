@@ -1,4 +1,4 @@
-figma.showUI(__html__, { width: 460, height: 700 });
+figma.showUI(__html__, { width: 420, height: 680 });
 
 let nodeCache = new Map();
 
@@ -19,10 +19,24 @@ function scanTextLayers(node, results) {
   }
 }
 
+function getSelectionTextLayers() {
+  nodeCache = new Map();
+  const results = [];
+  figma.currentPage.selection.forEach((node) => scanTextLayers(node, results));
+  return results;
+}
+
+function postSelectionUpdate() {
+  figma.ui.postMessage({ type: "selection-updated", layers: getSelectionTextLayers() });
+}
+
+figma.on("selectionchange", postSelectionUpdate);
+postSelectionUpdate();
+
 async function writeOne(item) {
   const node = nodeCache.get(item.layerId);
   if (!node) {
-    return { ...item, success: false, error: "Layer not found, try re-scanning" };
+    return { ...item, success: false, error: "Layer not found, try reselecting" };
   }
 
   try {
@@ -41,26 +55,6 @@ async function writeOne(item) {
 }
 
 figma.ui.onmessage = async (msg) => {
-  if (msg.type === "scan") {
-    const selection = figma.currentPage.selection;
-
-    if (selection.length === 0) {
-      figma.ui.postMessage({ type: "scan-error", message: "Nothing selected. Select a frame or text layer first." });
-      return;
-    }
-
-    nodeCache = new Map();
-    const results = [];
-    selection.forEach((node) => scanTextLayers(node, results));
-
-    if (results.length === 0) {
-      figma.ui.postMessage({ type: "scan-error", message: "No text layers found in this selection." });
-      return;
-    }
-
-    figma.ui.postMessage({ type: "scan-complete", results });
-  }
-
   if (msg.type === "write") {
     const writeResults = [];
     for (const item of msg.items) {
