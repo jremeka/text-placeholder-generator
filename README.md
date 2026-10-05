@@ -8,3 +8,7 @@ and fully undoable.
 
 ## Status
 In active development.
+
+## Anonymous analytics
+
+The plugin sends a small allowlist of anonymous product events to the shared PostHog project. Every event includes `plugin_name: text_placeholder`. It does not send file names, layer names, existing text, generated text, document IDs, or Figma user information.

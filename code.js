@@ -1,5 +1,67 @@
 figma.showUI(__html__, { width: 420, height: 680 });
 
+const POSTHOG_PROJECT_TOKEN = "phc_ur6gKBkRH2sxbedTFDS3jKgFYUXhDSrSfzpM9jYxdztx";
+const POSTHOG_HOST = "https://eu.i.posthog.com";
+const POSTHOG_PLUGIN_NAME = "text_placeholder";
+const PLUGIN_VERSION = "1.0.0";
+const ANALYTICS_ID_KEY = "text-placeholder-anonymous-id";
+const ANALYTICS_EVENTS = new Set([
+  "plugin_opened",
+  "category_group_viewed",
+  "placeholder_fill_completed",
+  "undo_used",
+  "operation_failed",
+]);
+const ANALYTICS_PROPERTIES = new Set([
+  "group",
+  "category",
+  "layer_count",
+  "success_count",
+  "failure_count",
+  "feature",
+]);
+
+async function analyticsDistinctId() {
+  let id = await figma.clientStorage.getAsync(ANALYTICS_ID_KEY);
+  if (!id) {
+    id = `anon-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    await figma.clientStorage.setAsync(ANALYTICS_ID_KEY, id);
+  }
+  return id;
+}
+
+async function captureAnalytics(eventName, properties = {}) {
+  if (!ANALYTICS_EVENTS.has(eventName)) return;
+  const safeProperties = {};
+  Object.entries(properties).forEach(([key, value]) => {
+    if (ANALYTICS_PROPERTIES.has(key) && ["string", "number", "boolean"].includes(typeof value)) {
+      safeProperties[key] = value;
+    }
+  });
+  try {
+    const distinctId = await analyticsDistinctId();
+    await fetch(`${POSTHOG_HOST}/i/v0/e/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: POSTHOG_PROJECT_TOKEN,
+        distinct_id: distinctId,
+        event: eventName,
+        properties: {
+          ...safeProperties,
+          plugin_name: POSTHOG_PLUGIN_NAME,
+          plugin_version: PLUGIN_VERSION,
+          $process_person_profile: false,
+        },
+      }),
+    });
+  } catch (_) {
+    // Analytics must never interrupt the plugin.
+  }
+}
+
+void captureAnalytics("plugin_opened");
+
 let nodeCache = new Map();
 
 function scanTextLayers(node, results) {
@@ -55,6 +117,11 @@ async function writeOne(item) {
 }
 
 figma.ui.onmessage = async (msg) => {
+  if (msg.type === "analytics") {
+    void captureAnalytics(msg.eventName, msg.properties);
+    return;
+  }
+
   if (msg.type === "write") {
     const writeResults = [];
     for (const item of msg.items) {

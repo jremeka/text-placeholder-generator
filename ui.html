@@ -386,6 +386,39 @@
     </div>
 
     <script>
+      // ---------- Anonymous PostHog analytics ----------
+      const ANALYTICS_EVENTS = new Set([
+        "category_group_viewed",
+        "placeholder_fill_completed",
+        "undo_used",
+        "operation_failed",
+      ]);
+      const ANALYTICS_PROPERTIES = new Set([
+        "group",
+        "category",
+        "layer_count",
+        "success_count",
+        "failure_count",
+        "feature",
+      ]);
+
+      function trackAnalytics(eventName, properties = {}) {
+        if (!ANALYTICS_EVENTS.has(eventName)) return;
+        const safeProperties = {};
+        Object.entries(properties).forEach(([key, value]) => {
+          if (ANALYTICS_PROPERTIES.has(key) && ["string", "number", "boolean"].includes(typeof value)) {
+            safeProperties[key] = value;
+          }
+        });
+        parent.postMessage({
+          pluginMessage: {
+            type: "analytics",
+            eventName,
+            properties: safeProperties,
+          },
+        }, "*");
+      }
+
       // ---------- Manual resize handle ----------
       const MIN_W = 340,
         MIN_H = 420,
@@ -1202,8 +1235,28 @@
 
         if (msg.type === "write-complete") {
           if (msg.purpose === "apply") {
-            // lastFillBatch already set optimistically before sending; nothing further needed
+            const results = Array.isArray(msg.results) ? msg.results : [];
+            const successCount = results.filter(result => result.success).length;
+            const failureCount = results.length - successCount;
+            trackAnalytics("placeholder_fill_completed", {
+              category: lastFillBatch?.category || "unknown",
+              layer_count: results.length,
+              success_count: successCount,
+              failure_count: failureCount,
+            });
+            if (failureCount) {
+              trackAnalytics("operation_failed", {
+                feature: "fill",
+                failure_count: failureCount,
+              });
+            }
           } else if (msg.purpose === "undo") {
+            const results = Array.isArray(msg.results) ? msg.results : [];
+            trackAnalytics("undo_used", {
+              layer_count: results.length,
+              success_count: results.filter(result => result.success).length,
+              failure_count: results.filter(result => !result.success).length,
+            });
             toastArea.innerHTML = "";
             lastFillBatch = null;
           }
@@ -1278,6 +1331,7 @@
             activeTab = btn.getAttribute("data-tab");
             moreOpen = false;
             renderPicker();
+            trackAnalytics("category_group_viewed", { group: activeTab });
           };
         });
 
@@ -1314,7 +1368,7 @@
           ? catByValue(category).label
           : category;
 
-        lastFillBatch = { label, undoItems };
+        lastFillBatch = { label, category, undoItems };
 
         toastArea.innerHTML = `
         <div class="toast glass">
